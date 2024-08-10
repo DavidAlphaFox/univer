@@ -19,13 +19,14 @@ import { DisposableCollection, ICommandService, IContextService, Inject, IUniver
 import {
     TextSelectionManagerService,
 } from '@univerjs/docs';
-import type { BaseObject, IChangeObserverConfig, IRenderContext, IRenderModule, RichText, Scene } from '@univerjs/engine-render';
+import type { BaseObject, IChangeObserverConfig, IRenderContext, IRenderModule, RichText, Scene, Slide } from '@univerjs/engine-render';
 import { ITextSelectionRenderManager, ObjectType } from '@univerjs/engine-render';
-import { CanvasView } from '@univerjs/slides';
+// import { CanvasView } from '@univerjs/slides';
 import { Subject } from 'rxjs';
 import type { ISetEditorInfo } from '../services/slide-editor-bridge.service';
 import { ISlideEditorBridgeService } from '../services/slide-editor-bridge.service';
 import type { ISlideRichTextProps } from '../type';
+import { CanvasView } from './canvas-view';
 
 // interface ICanvasOffset {
 //     left: number;
@@ -95,12 +96,7 @@ export class SlideEditorBridgeRenderController extends RxDisposable implements I
     }
 
     private _initEventListener(d: DisposableCollection) {
-        // const model = this._instanceSrv.getCurrentUnitForType<SlideDataModel>(UniverInstanceType.UNIVER_SLIDE);
-        // const pagesMap = model?.getPages() ?? {};
-        // const pages = Object.values(pagesMap);
-
-        const canvasView = this._canvasView;
-        canvasView.setSceneMap$.subscribe((scene: Scene) => {
+        const listenersForPageScene = (scene: Scene) => {
             const transformer = scene.getTransformer();
             if (!transformer) return;
 
@@ -133,17 +129,15 @@ export class SlideEditorBridgeRenderController extends RxDisposable implements I
                     this.startEditing(object as RichText);
                 }
             }));
-        });
-
-        // for (let i = 0; i < pages.length; i++) {
-        //     const page = pages[i];
-        //     const { scene } = this._canvasView.getRenderUnitByPageId(page.id);
-        //     if (!scene) break;
-        // }
+        };
+        const { mainComponent } = this._renderContext;
+        const pageSceneList = Array.from((mainComponent as Slide).getSubScenes().values());
+        for (let i = 0; i < pageSceneList.length; i++) {
+            listenersForPageScene(pageSceneList[i] as Scene);
+        }
     }
 
     pickOtherObjects() {
-        this.setEditorVisible(false);
         this.endEditing();
     }
 
@@ -154,8 +148,9 @@ export class SlideEditorBridgeRenderController extends RxDisposable implements I
      */
     endEditing() {
         if (!this._curRichText) return;
-        const curRichText = this._curRichText;
+        this.setEditorVisible(false);
 
+        const curRichText = this._curRichText;
         const slideData = this._instanceSrv.getCurrentUnitForType<SlideDataModel>(UniverInstanceType.UNIVER_SLIDE);
         if (!slideData) return false;
         curRichText.refreshDocumentByDocData();

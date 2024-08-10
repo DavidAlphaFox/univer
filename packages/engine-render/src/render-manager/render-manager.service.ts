@@ -257,7 +257,7 @@ export class RenderManagerService extends Disposable implements IRenderManagerSe
                 with(_dependency) {
                     return null;
                 },
-            };
+            } as IRender;
         }
 
         this._addRenderUnit(unitId, renderUnit);

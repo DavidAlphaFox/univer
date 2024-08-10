@@ -16,7 +16,8 @@
 
 import type { IAccessor, IOperation } from '@univerjs/core';
 import { CommandType } from '@univerjs/core';
-import { CanvasView } from '@univerjs/slides';
+import { CanvasView } from '../../controllers/canvas-view';
+// import { CanvasView } from '@univerjs/slides';
 
 export const SetSlidePageThumbOperation: IOperation = {
     id: 'slide.operation.set-slide-page-thumb',

@@ -18,7 +18,7 @@ import type { Dependency, SlideDataModel } from '@univerjs/core';
 import { Inject, Injector, IUniverInstanceService, mergeOverrideWithDependencies, Plugin, UniverInstanceType } from '@univerjs/core';
 
 import { IRenderManagerService } from '@univerjs/engine-render';
-import { CanvasView } from '@univerjs/slides';
+// import { CanvasView } from '@univerjs/slides';
 import type { IUniverSlidesDrawingConfig } from './controllers/slide-ui.controller';
 import { SlidesUIController } from './controllers/slide-ui.controller';
 import { SlideRenderController } from './controllers/slide.render-controller';
@@ -29,6 +29,7 @@ import { SlideEditorBridgeRenderController } from './controllers/slide-editor-br
 import { ISlideEditorManagerService, SlideEditorManagerService } from './services/slide-editor-manager.service';
 import { SlideEditingRenderController } from './controllers/slide-editing.render-controller';
 import { SlideRenderService } from './services/slide-render.service';
+import { CanvasView } from './controllers/canvas-view';
 
 export const SLIDE_UI_PLUGIN_NAME = 'SLIDE_UI';
 
@@ -64,7 +65,6 @@ export class UniverSlidesUIPlugin extends Plugin {
         });
         mergeOverrideWithDependencies([
             [CanvasView],
-
             // cannot register in _renderManagerService now.
             // [ISlideEditorBridgeService, { useClass: SlideEditorBridgeService }],
             // // used by SlideUIController --> EditorContainer
@@ -81,6 +81,7 @@ export class UniverSlidesUIPlugin extends Plugin {
         ] as Dependency[], this._config.override).forEach((m) => {
             this._injector.add(m);
         });
+        this._injector.get(CanvasView);
     }
 
     override onRendered(): void {

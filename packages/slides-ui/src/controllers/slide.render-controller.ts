@@ -27,7 +27,8 @@ import {
 } from '@univerjs/engine-render';
 
 import { Subject, takeUntil } from 'rxjs';
-import { CanvasView } from '@univerjs/slides';
+// import { CanvasView } from '@univerjs/slides';
+import { ObjectProvider } from '@univerjs/slides';
 import { SlideRenderService } from '../services/slide-render.service';
 
 export enum SLIDE_KEY {
@@ -41,17 +42,17 @@ export type PageID = string;
 // export const ICanvasView = createIdentifier<IUniverInstanceService>('univer.slide.canvas-view');
 // @OnLifecycle(LifecycleStages.Ready, CanvasView)
 export class SlideRenderController extends RxDisposable implements IRenderModule {
+    private _objectProvider: ObjectProvider | null = null;
     constructor(
         private readonly _renderContext: IRenderContext<UnitModel>,
         @Inject(Injector) private readonly _injector: Injector,
         @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService,
         @IRenderManagerService private readonly _renderManagerService: IRenderManagerService,
-        @Inject(SlideRenderService) private readonly _slideRenderService: SlideRenderService,
-        @Inject(CanvasView) private readonly _canvasView: CanvasView
+        @Inject(SlideRenderService) private readonly _slideRenderService: SlideRenderService
 
     ) {
         super();
-        // this._initializeDependencies(this._injector);
+        this._objectProvider = this._injector.createInstance(ObjectProvider);
         this._initialize();
         this._addNewRender();
     }
@@ -78,9 +79,7 @@ export class SlideRenderController extends RxDisposable implements IRenderModule
      * _initialize --> _create --> _addNewRender
      * @param unitId
      */
-
     private _addNewRender() {
-        // if (!this._renderContext) return;
         const { unitId, engine, scene } = this._renderContext;
         const slideDataModel = this._univerInstanceService.getUnit<SlideDataModel>(unitId, UniverInstanceType.UNIVER_SLIDE);
 
@@ -147,7 +146,6 @@ export class SlideRenderController extends RxDisposable implements IRenderModule
         // #region create slide
         const slideComponent = this._createSlide(scene);
         this._renderContext.mainComponent = slideComponent;
-        this._renderContext.components.set(SLIDE_KEY.COMPONENT, slideComponent);
         this._createSlidePages(slideDataModel, slideComponent);
         this.createThumbs();
         // #endregion
@@ -158,23 +156,8 @@ export class SlideRenderController extends RxDisposable implements IRenderModule
     }
 
     get objectProvider() {
-        return this._canvasView.objectProvider;
+        return this._objectProvider;
     }
-
-    // private _create(unitId: Nullable<string>) {
-    //     if (unitId == null) {
-    //         return;
-    //     }
-
-    //     const model = this._univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_SLIDE);
-    //     if (model == null) {
-    //         return;
-    //     }
-
-    //     if (!this._renderManagerService.has(unitId)) {
-    //         this._addNewRender(unitId);
-    //     }
-    // }
 
     activePage(_pageId?: string) {
         let pageId = _pageId;
@@ -210,7 +193,7 @@ export class SlideRenderController extends RxDisposable implements IRenderModule
             return;
         }
 
-        this._createPageScene(id, page);
+        this.createPageScene(id, page);
     }
 
     private _scrollToCenter() {
@@ -237,6 +220,10 @@ export class SlideRenderController extends RxDisposable implements IRenderModule
         this.createThumbs();
     }, 300);
 
+    /**
+     * init --> _addNewRender
+     * @param mainScene
+     */
     private _createSlide(mainScene: Scene) {
         const model = this._univerInstanceService.getCurrentUnitForType<SlideDataModel>(UniverInstanceType.UNIVER_SLIDE)!;
 
@@ -343,7 +330,7 @@ export class SlideRenderController extends RxDisposable implements IRenderModule
         for (let i = 0, len = pageOrder.length; i < len; i++) {
             const pageId = pageOrder[i];
 
-            this._createPageScene(pageId, pages[pageId]);
+            this.createPageScene(pageId, pages[pageId]);
 
             this._createThumb(pageId);
         }
@@ -396,8 +383,9 @@ export class SlideRenderController extends RxDisposable implements IRenderModule
      * @param page
      * @returns pageScene: Scene
      */
-    private _createPageScene(pageId: string, page: ISlidePage) {
-        const render = this._currentRender();
+    createPageScene(pageId: string, page: ISlidePage) {
+        // const render = this._currentRender();
+        const render = this._renderContext;
         if (!render || !this.objectProvider) {
             return;
         }
@@ -454,11 +442,11 @@ export class SlideRenderController extends RxDisposable implements IRenderModule
     }
 
     getRenderUnitByPageId(pageId: PageID) {
-        const scene = this._sceneMap.get(pageId);
+        const pageScene = this._renderContext.components.get(pageId) as unknown as Scene;
         // no render context
         // const { engine, unit } = this._renderContext;
         return {
-            scene,
+            scene: pageScene,
             // engine,
             // unit,
         };
@@ -512,7 +500,7 @@ export class SlideRenderController extends RxDisposable implements IRenderModule
 
         const slide = render.mainComponent as Slide;
 
-        const scene = this._createPageScene(id, page);
+        const scene = this.createPageScene(id, page);
 
         scene && slide?.addPage(scene);
 
