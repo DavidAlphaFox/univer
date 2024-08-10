@@ -152,8 +152,6 @@ export class SlideRenderController extends RxDisposable implements IRenderModule
         this.createThumbs();
         // #endregion
 
-        this._renderContext.sceneMap = this._sceneMap;
-
         engine.runRenderLoop(() => {
             scene.render();
         });

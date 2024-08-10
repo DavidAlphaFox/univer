@@ -58,12 +58,13 @@ export class UniverSlidesUIPlugin extends Plugin {
 
     override onReady(): void {
         ([
-            [CanvasView],
             [SlideRenderController],
         ] as Dependency[]).forEach((m) => {
             this.disposeWithMe(this._renderManagerService.registerRenderModule(UniverInstanceType.UNIVER_SLIDE, m));
         });
         mergeOverrideWithDependencies([
+            [CanvasView],
+
             // cannot register in _renderManagerService now.
             // [ISlideEditorBridgeService, { useClass: SlideEditorBridgeService }],
             // // used by SlideUIController --> EditorContainer

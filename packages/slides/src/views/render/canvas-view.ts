@@ -43,6 +43,8 @@ export class CanvasView extends RxDisposable implements IRenderModule {
     private _objectProvider: ObjectProvider | null = null;
 
     constructor(
+        // this controller needs by commands. that means this controller is  not init by renderUnit, no renderContext.
+        // private readonly _renderContext: IRenderContext<UnitModel>,
         @Inject(Injector) private readonly _injector: Injector,
         @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService,
         @IRenderManagerService private readonly _renderManagerService: IRenderManagerService
@@ -480,12 +482,13 @@ export class CanvasView extends RxDisposable implements IRenderModule {
     getRenderUnitByPageId(pageId: PageID) {
         const renderUnit = this._currentRender();
         if (!renderUnit) return;
-        const sceneMap = renderUnit._renderContext.sceneMap;
-        const scene = this._sceneMap.get(pageId);
+        // const sceneMap = renderUnit._renderContext.sceneMap;
+        const pageScene = renderUnit.components.get(pageId);
+
         // no render context
         // const { engine, unit } = this._renderContext;
         return {
-            scene,
+            scene: pageScene,
             // engine,
             // unit,
         };
