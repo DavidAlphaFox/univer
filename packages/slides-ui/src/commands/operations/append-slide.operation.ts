@@ -17,7 +17,7 @@
 import type { ICommand, SlideDataModel } from '@univerjs/core';
 import { CommandType, IUniverInstanceService, UniverInstanceType } from '@univerjs/core';
 import { IRenderManagerService } from '@univerjs/engine-render';
-// import { CanvasView } from '@univerjs/slides';
+
 import { SlideRenderController } from '../../controllers/slide.render-controller';
 
 export const AppendSlideOperation: ICommand = {

@@ -18,7 +18,7 @@ import type { Dependency, SlideDataModel } from '@univerjs/core';
 import { Inject, Injector, IUniverInstanceService, mergeOverrideWithDependencies, Plugin, UniverInstanceType } from '@univerjs/core';
 
 import { IRenderManagerService } from '@univerjs/engine-render';
-// import { CanvasView } from '@univerjs/slides';
+
 import type { IUniverSlidesDrawingConfig } from './controllers/slide-ui.controller';
 import { SlidesUIController } from './controllers/slide-ui.controller';
 import { SlideRenderController } from './controllers/slide.render-controller';
@@ -59,6 +59,8 @@ export class UniverSlidesUIPlugin extends Plugin {
 
     override onReady(): void {
         ([
+            // SlideRenderService will be init in ready stage, and then calling RenderManagerService@createRender --> init all deps in this rendering register block.
+
             [SlideRenderController],
         ] as Dependency[]).forEach((m) => {
             this.disposeWithMe(this._renderManagerService.registerRenderModule(UniverInstanceType.UNIVER_SLIDE, m));
@@ -70,12 +72,11 @@ export class UniverSlidesUIPlugin extends Plugin {
             // // used by SlideUIController --> EditorContainer
             // [ISlideEditorManagerService, { useClass: SlideEditorManagerService }],
 
-            // This controller should be registered in Ready stage.
-            // this controller would add a new RenderUnit (__INTERNAL_EDITOR__DOCS_NORMAL)
-            // so this new RenderUnit does not have ISlideEditorBridgeService & ISlideEditorManagerService if
+            // SlidesUIController controller should be registered in Ready stage.
+            // SlidesUIController controller would add a new RenderUnit (__INTERNAL_EDITOR__DOCS_NORMAL)
             [SlidesUIController, {
                 useFactory: () => this._injector.createInstance(SlidesUIController, this._config),
-            }], // editor service were create in renderManagerService
+            }], // editor service was create in renderManagerService
             [SlideRenderController],
             [SlidePopupMenuController],
         ] as Dependency[], this._config.override).forEach((m) => {
@@ -102,8 +103,8 @@ export class UniverSlidesUIPlugin extends Plugin {
     private _markSlideAsFocused() {
         const currentService = this._univerInstanceService;
         try {
-            const slide = currentService.getCurrentUnitForType<SlideDataModel>(UniverInstanceType.UNIVER_SLIDE)!;
-            currentService.focusUnit(slide.getUnitId());
+            const slideDataModel = currentService.getCurrentUnitForType<SlideDataModel>(UniverInstanceType.UNIVER_SLIDE)!;
+            currentService.focusUnit(slideDataModel.getUnitId());
         } catch (e) {
         }
     }

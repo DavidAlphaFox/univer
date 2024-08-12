@@ -17,7 +17,6 @@
 import type { IAccessor, IOperation, SlideDataModel } from '@univerjs/core';
 import { CommandType, IUniverInstanceService, UniverInstanceType } from '@univerjs/core';
 import { CanvasView } from '../../controllers/canvas-view';
-// import { CanvasView } from '@univerjs/slides';
 
 export interface IActiveSlidePageOperationParams {
     id: string;

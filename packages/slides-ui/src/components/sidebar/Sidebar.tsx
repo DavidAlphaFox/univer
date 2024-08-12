@@ -17,7 +17,7 @@
 import type { Nullable, SlideDataModel } from '@univerjs/core';
 import { IUniverInstanceService, UniverInstanceType, useDependency } from '@univerjs/core';
 import { type BaseObject, ObjectType } from '@univerjs/engine-render';
-// import { CanvasView } from '@univerjs/slides';
+
 import React from 'react';
 import ArrangePanel from '../panels/ArrangePanel';
 import TransformPanel from '../panels/TransformPanel';

@@ -21,7 +21,7 @@ import { LocaleService, useDependency } from '@univerjs/core';
 import clsx from 'clsx';
 import { ColorPicker, Dropdown } from '@univerjs/design';
 import { MoreDownSingle, PaintBucket } from '@univerjs/icons';
-// import { CanvasView } from '@univerjs/slides';
+
 import type { Rect } from '@univerjs/engine-render';
 import { CanvasView } from '../../controllers/canvas-view';
 import styles from './index.module.less';

@@ -21,7 +21,7 @@ import {
 } from '@univerjs/docs';
 import type { BaseObject, IChangeObserverConfig, IRenderContext, IRenderModule, RichText, Scene, Slide } from '@univerjs/engine-render';
 import { ITextSelectionRenderManager, ObjectType } from '@univerjs/engine-render';
-// import { CanvasView } from '@univerjs/slides';
+
 import { Subject } from 'rxjs';
 import type { ISetEditorInfo } from '../services/slide-editor-bridge.service';
 import { ISlideEditorBridgeService } from '../services/slide-editor-bridge.service';
