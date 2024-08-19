@@ -17,14 +17,14 @@
 import type { IScale } from '@univerjs/core';
 import { BaselineOffset, getColorStyle } from '@univerjs/core';
 
-import { GlyphType, hasCJK } from '../../../basics';
+import { hasCJK } from '../../../basics';
 import { COLOR_BLACK_RGB } from '../../../basics/const';
 import type { IDocumentSkeletonGlyph } from '../../../basics/i-document-skeleton-cached';
 import { Vector2 } from '../../../basics/vector2';
 import type { UniverRenderingContext } from '../../../context';
 import { DocumentsSpanAndLineExtensionRegistry } from '../../extension';
 import { docExtension } from '../doc-extension';
-import { Checkbox } from '../../../shape';
+// import { Checkbox } from '../../../shape';
 
 const UNIQUE_KEY = 'DefaultDocsFontAndBaseLineExtension';
 
@@ -106,22 +106,22 @@ export class FontAndBaseLine extends docExtension {
             ctx.fillText(content, 0, 0);
             ctx.restore();
         } else {
-            const CHECKED_GLYPH = '\u2611';
-            const UNCHECKED_GLYPH = '\u2610';
-            if ((content === UNCHECKED_GLYPH || content === CHECKED_GLYPH) && glyph.glyphType === GlyphType.LIST) {
-                ctx.save();
-                const size = glyph.ts?.fs ?? 16;
-                const MAGIC_OFFSET = 3;
-                ctx.translate(spanPointWithFont.x, spanPointWithFont.y - (bBox.aba + bBox.abd) - MAGIC_OFFSET);
-                Checkbox.drawWith(ctx, {
-                    width: size,
-                    height: size,
-                    checked: content === CHECKED_GLYPH,
-                });
-                ctx.restore();
-            } else {
-                ctx.fillText(content, spanPointWithFont.x, spanPointWithFont.y);
-            }
+            // const CHECKED_GLYPH = '\u2611';
+            // const UNCHECKED_GLYPH = '\u2610';
+            // if ((content === UNCHECKED_GLYPH || content === CHECKED_GLYPH) && glyph.glyphType === GlyphType.LIST) {
+            //     ctx.save();
+            //     const size = glyph.ts?.fs ?? 16;
+            //     const MAGIC_OFFSET = 3;
+            //     ctx.translate(spanPointWithFont.x, spanPointWithFont.y - (bBox.aba + bBox.abd) - MAGIC_OFFSET);
+            //     Checkbox.drawWith(ctx, {
+            //         width: size,
+            //         height: size,
+            //         checked: content === CHECKED_GLYPH,
+            //     });
+            //     ctx.restore();
+            // } else {
+            ctx.fillText(content, spanPointWithFont.x, spanPointWithFont.y);
+            // }
         }
     }
 

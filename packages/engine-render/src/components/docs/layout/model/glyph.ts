@@ -251,8 +251,6 @@ export function createSkeletonBulletGlyph(
     const {
         bBox: boundingBox,
         symbol: content,
-        ts: textStyle,
-        fontStyle,
         bulletAlign = BulletAlignment.START,
         bulletType = false,
     } = bulletSkeleton;
@@ -281,12 +279,11 @@ export function createSkeletonBulletGlyph(
         content,
         ts: {
             ...glyph.ts,
-            ...textStyle,
             st: {
                 s: BooleanNumber.FALSE,
             },
         },
-        fontStyle,
+        fontStyle: glyph.fontStyle,
         width,
         xOffset: 0,
         bBox,
