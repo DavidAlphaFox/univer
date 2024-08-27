@@ -30,13 +30,15 @@ import {
     UniverInstanceType,
 } from '@univerjs/core';
 import type {
+    ISetSelectionsOperationParams,
     ISheetCommandSharedParams,
 } from '@univerjs/sheets';
-import { InsertSheetCommand, RemoveSheetCommand, SetWorksheetActiveOperation, SheetsSelectionsService, WorkbookEditablePermission } from '@univerjs/sheets';
+import { getPrimaryForRange, InsertSheetCommand, RemoveSheetCommand, SetSelectionsOperation, SetWorksheetActiveOperation, SheetsSelectionsService, WorkbookEditablePermission } from '@univerjs/sheets';
 
 import type { IDataValidationResCache } from '@univerjs/sheets-data-validation';
 import { SheetsDataValidationValidatorService } from '@univerjs/sheets-data-validation';
 import { FWorksheet } from './f-worksheet';
+import type { FRange } from './f-range';
 
 export class FWorkbook {
     readonly id: string;
@@ -297,4 +299,25 @@ export class FWorkbook {
             this._workbook.getUnitId()
         );
     }
+
+    setActiveRange(range: FRange): void {
+        const sheet = this.getActiveSheet();
+        const sheetId = sheet.getSheetId();
+
+        const worksheet = sheetId ? this._workbook.getSheetBySheetId(sheetId) : this._workbook.getActiveSheet(true);
+        if (!worksheet) {
+            throw new Error('No active sheet found');
+        }
+
+        const setSelectionOperationParams: ISetSelectionsOperationParams = {
+            unitId: this.getId(),
+            subUnitId: sheet.getSheetId(),
+
+            selections: [range].map((r) => ({ range: r.getRange(), primary: getPrimaryForRange(r.getRange(), worksheet), style: null })),
+        };
+
+        this._commandService.syncExecuteCommand(SetSelectionsOperation.id, setSelectionOperationParams);
+    }
+
+    setActiveSelection = this.setActiveRange;
 }

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { Inject, LifecycleService, LifecycleStages, toDisposable } from '@univerjs/core';
+import { Inject, Injector, LifecycleService, LifecycleStages, toDisposable } from '@univerjs/core';
 import type { IDisposable } from '@univerjs/core';
 import { filter } from 'rxjs';
+import { FClipboardHooks } from './hooks/f-clipboard-hooks';
 
 export class FHooks {
     constructor(
+        @Inject(Injector) protected readonly _injector: Injector,
         @Inject(LifecycleService) private readonly _lifecycleService: LifecycleService
     ) {
         // empty
@@ -60,4 +62,9 @@ export class FHooks {
     onSteady(callback: () => void): IDisposable {
         return toDisposable(this._lifecycleService.lifecycle$.pipe(filter((lifecycle) => lifecycle === LifecycleStages.Steady)).subscribe(callback));
     }
+
+    beforeCopy = FClipboardHooks.beforeCopy.bind(this);
+    afterCopy = FClipboardHooks.afterCopy.bind(this);
+    beforePaste = FClipboardHooks.beforePaste.bind(this);
+    afterPaste = FClipboardHooks.afterPaste.bind(this);
 }
