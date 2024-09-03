@@ -34,9 +34,9 @@ import type { DocumentSkeleton, IRender, IRenderContext, IRenderModule } from '@
 import { DocumentViewModel, IRenderManagerService } from '@univerjs/engine-render';
 
 import { BehaviorSubject, takeUntil } from 'rxjs';
-import { TextSelectionManagerService } from '../../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../../services/text-selection-manager.service';
 import { DocStateChangeManagerService } from '../../../services/doc-state-change-manager.service';
-import { IMEInputManagerService } from '../../../services/ime-input-manager.service';
+import { IMEInputManagerService } from '../../../../../docs-ui/src/services/ime-input-manager.service';
 import { DocSkeletonManagerService } from '../../../services/doc-skeleton-manager.service';
 import { ITextSelectionRenderManager, TextSelectionRenderManager } from './mock-text-selection-render-manager';
 
@@ -112,7 +112,7 @@ export function createCommandTestBed(workbookData?: IDocumentData, dependencies?
 
         override onStarting(): void {
             const injector = this._injector;
-            injector.add([TextSelectionManagerService]);
+            injector.add([DocSelectionManagerService]);
             injector.add([DocStateChangeManagerService]);
             injector.add([IMEInputManagerService]);
             injector.add([ITextSelectionRenderManager, { useClass: TextSelectionRenderManager }]);

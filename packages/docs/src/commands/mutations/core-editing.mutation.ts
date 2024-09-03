@@ -17,10 +17,10 @@
 import { CommandType, IUniverInstanceService, JSONX } from '@univerjs/core';
 import type { IMutation, IMutationCommonParams, JSONXActions, Nullable } from '@univerjs/core';
 import { IRenderManagerService, type ITextRangeWithStyle } from '@univerjs/engine-render';
-import { serializeDocRange, TextSelectionManagerService } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService, serializeDocRange } from '../../services/text-selection-manager.service';
 import type { IDocStateChangeParams } from '../../services/doc-state-change-manager.service';
 import { DocStateChangeManagerService } from '../../services/doc-state-change-manager.service';
-import { IMEInputManagerService } from '../../services/ime-input-manager.service';
+import { IMEInputManagerService } from '../../../../docs-ui/src/services/doc-ime-input-manager.service';
 import { DocSkeletonManagerService } from '../../services/doc-skeleton-manager.service';
 
 export interface IRichTextEditingMutationParams extends IMutationCommonParams {
@@ -71,7 +71,7 @@ export const RichTextEditingMutation: IMutation<IRichTextEditingMutationParams, 
             throw new Error(`DocumentDataModel or documentViewModel not found for unitId: ${unitId}`);
         }
 
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const docRanges = textSelectionManagerService.getDocRanges() ?? [];
 
         const serializedSelections = docRanges.map(serializeDocRange);

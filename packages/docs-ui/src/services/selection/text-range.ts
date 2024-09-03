@@ -16,18 +16,8 @@
 
 import type { ITextRange, Nullable } from '@univerjs/core';
 import { BooleanNumber, COLORS, Tools } from '@univerjs/core';
-import type { INodePosition } from '../../../basics/interfaces';
-import type { ISuccinctDocRangeParam, ITextSelectionStyle } from '../../../basics/range';
-import { NORMAL_TEXT_SELECTION_PLUGIN_STYLE, RANGE_DIRECTION } from '../../../basics/range';
-import { getColor } from '../../../basics/tools';
-import type { IPoint } from '../../../basics/vector2';
-import type { Scene } from '../../../scene';
-import { Rect } from '../../../shape/rect';
-import { RegularPolygon } from '../../../shape/regular-polygon';
-import type { ThinScene } from '../../../thin-scene';
-import type { DocumentSkeleton } from '../layout/doc-skeleton';
-import type { Documents } from '../document';
-import type { IDocumentSkeletonGlyph } from '../../../basics';
+import type { Documents, DocumentSkeleton, IDocumentSkeletonGlyph, INodePosition, IPoint, ISuccinctDocRangeParam, ITextSelectionStyle, Scene, ThinScene } from '@univerjs/engine-render';
+import { getColor, NORMAL_TEXT_SELECTION_PLUGIN_STYLE, RANGE_DIRECTION, Rect, RegularPolygon } from '@univerjs/engine-render';
 import {
     compareNodePosition,
     compareNodePositionLogic,

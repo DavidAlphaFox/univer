@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
+import type { DocumentDataModel } from '@univerjs/core';
 import {
     ICommandService,
     IContextService,
-    LifecycleStages,
-    OnLifecycle,
+    Inject,
     RxDisposable,
 } from '@univerjs/core';
-import { IClipboardInterfaceService } from '@univerjs/ui';
 
-import { ITextSelectionRenderManager } from '@univerjs/engine-render';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
 import { takeUntil } from 'rxjs';
-import { CutContentCommand, InnerPasteCommand } from '@univerjs/docs';
-import { DocCopyCommand, DocCutCommand, DocPasteCommand, whenDocOrEditor, whenFocusEditor } from '../commands/commands/clipboard.command';
-import { IDocClipboardService } from '../services/clipboard/clipboard.service';
+import { whenDocOrEditor, whenFocusEditor } from '../../commands/commands/clipboard.command';
+import { IDocClipboardService } from '../../services/clipboard/clipboard.service';
+import { DocSelectionRenderService } from '../../services/selection/doc-selection-render.service';
 
-@OnLifecycle(LifecycleStages.Rendered, DocClipboardController)
-export class DocClipboardController extends RxDisposable {
+export class DocClipboardController extends RxDisposable implements IRenderModule {
     constructor(
+        private readonly _context: IRenderContext<DocumentDataModel>,
         @ICommandService private readonly _commandService: ICommandService,
-        @IClipboardInterfaceService private readonly _clipboardInterfaceService: IClipboardInterfaceService,
         @IDocClipboardService private readonly _docClipboardService: IDocClipboardService,
-        @ITextSelectionRenderManager private readonly _textSelectionRenderManager: ITextSelectionRenderManager,
+        @Inject(DocSelectionRenderService) private readonly _docSelectionRenderService: DocSelectionRenderService,
         @IContextService private readonly _contextService: IContextService
     ) {
         super();
@@ -44,14 +42,11 @@ export class DocClipboardController extends RxDisposable {
     }
 
     private _init() {
-        [DocCopyCommand, DocCutCommand, DocPasteCommand].forEach((command) => this.disposeWithMe(this._commandService.registerMultipleCommand(command)));
-        [InnerPasteCommand, CutContentCommand].forEach((command) => this.disposeWithMe(this._commandService.registerCommand(command)));
-
         this._initLegacyPasteCommand();
     }
 
     private _initLegacyPasteCommand(): void {
-        this._textSelectionRenderManager?.onPaste$.pipe(takeUntil(this.dispose$)).subscribe((config) => {
+        this._docSelectionRenderService?.onPaste$.pipe(takeUntil(this.dispose$)).subscribe((config) => {
             if (!whenDocOrEditor(this._contextService)) {
                 return;
             }

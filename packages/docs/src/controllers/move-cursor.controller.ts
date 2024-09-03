@@ -42,7 +42,7 @@ import { getDocObject } from '../basics/component-tools';
 import type { IMoveCursorOperationParams } from '../commands/operations/cursor.operation';
 import { MoveCursorOperation, MoveSelectionOperation } from '../commands/operations/cursor.operation';
 import { DocSkeletonManagerService } from '../services/doc-skeleton-manager.service';
-import { TextSelectionManagerService } from '../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../services/text-selection-manager.service';
 import { findAboveCell, findBellowCell, findLineBeforeAndAfterTable, findTableAfterLine, findTableBeforeLine, firstLineInCell, firstLineInTable, lastLineInCell, lastLineInTable } from '../basics/table';
 
 @OnLifecycle(LifecycleStages.Rendered, MoveCursorController)
@@ -52,7 +52,7 @@ export class MoveCursorController extends Disposable {
     constructor(
         @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService,
         @IRenderManagerService private readonly _renderManagerService: IRenderManagerService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService,
+        @Inject(DocSelectionManagerService) private readonly _textSelectionManagerService: DocSelectionManagerService,
         @ICommandService private readonly _commandService: ICommandService
     ) {
         super();

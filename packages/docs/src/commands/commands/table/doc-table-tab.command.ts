@@ -16,7 +16,7 @@
 
 import type { ICommand, Nullable } from '@univerjs/core';
 import { CommandType, ICommandService, IUniverInstanceService } from '@univerjs/core';
-import { TextSelectionManagerService } from '../../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../../services/text-selection-manager.service';
 import { getCommandSkeleton } from '../../util';
 import type { IOffsets } from './table';
 import { CellPosition, getCellOffsets, INSERT_ROW_POSITION } from './table';
@@ -31,7 +31,7 @@ export const DocTableTabCommand: ICommand<IDocTableTabCommandParams> = {
     type: CommandType.COMMAND,
     handler: async (accessor, params: IDocTableTabCommandParams) => {
         const { shift } = params;
-        const textSelectionManager = accessor.get(TextSelectionManagerService);
+        const textSelectionManager = accessor.get(DocSelectionManagerService);
         const activeTextRange = textSelectionManager.getActiveTextRangeWithStyle();
         const commandService = accessor.get(ICommandService);
         const univerInstanceService = accessor.get(IUniverInstanceService);

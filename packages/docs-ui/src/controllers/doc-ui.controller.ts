@@ -18,7 +18,7 @@ import { connectInjector, Disposable, ICommandService, Inject, Injector, IUniver
 import type { IMenuItemFactory } from '@univerjs/ui';
 import { BuiltInUIPart, ComponentManager, ILayoutService, IMenuService, IShortcutService, IUIPartsService } from '@univerjs/ui';
 
-import { ITextSelectionRenderManager } from '@univerjs/engine-render';
+import { IRenderManagerService } from '@univerjs/engine-render';
 import { TodoList } from '@univerjs/icons';
 import { COLOR_PICKER_COMPONENT, ColorPicker } from '../components/color-picker';
 import {
@@ -48,6 +48,7 @@ import {
 } from '../shortcuts/toolbar.shortcut';
 import { TabShortCut } from '../shortcuts/format.shortcut';
 import { BULLET_LIST_TYPE_COMPONENT, BulletListTypePicker, ORDER_LIST_TYPE_COMPONENT, OrderListTypePicker } from '../components/list-type-picker';
+import { DocSelectionRenderService } from '../services/selection/doc-selection-render.service';
 import {
     AlignCenterMenuItemFactory,
     AlignJustifyMenuItemFactory,
@@ -104,6 +105,7 @@ export class DocUIController extends Disposable {
         this.disposeWithMe(componentManager.register('TodoList', TodoList));
     }
 
+    // TODO: @zhangwei, why add workbook to docs-ui?
     private _initUiParts() {
         const workbook = this._univerInstanceService.getCurrentUnitForType(UniverInstanceType.UNIVER_SHEET);
         if (this._config.layout?.docContainerConfig?.footer && !workbook) {
@@ -206,9 +208,11 @@ export class DocUIController extends Disposable {
 
     private _initFocusHandler(): void {
         this.disposeWithMe(
-            this._layoutService.registerFocusHandler(UniverInstanceType.UNIVER_DOC, () => {
-                const textSelectionManagerService = this._injector.get(ITextSelectionRenderManager);
-                textSelectionManagerService.focus();
+            this._layoutService.registerFocusHandler(UniverInstanceType.UNIVER_DOC, (unitId: string) => {
+                const renderManagerService = this._injector.get(IRenderManagerService);
+                const docSelectionRenderService = renderManagerService.getRenderById(unitId)!.with(DocSelectionRenderService);
+
+                docSelectionRenderService.focus();
             })
         );
     }

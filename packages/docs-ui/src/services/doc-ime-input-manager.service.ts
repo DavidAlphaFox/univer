@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { JSONX } from '@univerjs/core';
-import type { IDisposable, JSONXActions, Nullable } from '@univerjs/core';
-import type { ITextRangeWithStyle } from '@univerjs/engine-render';
-
-import type { IRichTextEditingMutationParams } from '../commands/mutations/core-editing.mutation';
+import { JSONX, RxDisposable } from '@univerjs/core';
+import type { DocumentDataModel, JSONXActions, Nullable } from '@univerjs/core';
+import type { IRichTextEditingMutationParams } from '@univerjs/docs';
+import type { IRenderContext, IRenderModule, ITextRangeWithStyle } from '@univerjs/engine-render';
 
 interface ICacheParams {
     undoCache: IRichTextEditingMutationParams[];
@@ -27,10 +26,18 @@ interface ICacheParams {
 
 // Used to record all intermediate states when typing with IME,
 // and then output the entire undo and redo operations.
-export class IMEInputManagerService implements IDisposable {
+export class DocIMEInputManagerService extends RxDisposable implements IRenderModule {
     private _previousActiveRange: Nullable<ITextRangeWithStyle> = null;
+
     private _undoMutationParamsCache: IRichTextEditingMutationParams[] = [];
+
     private _redoMutationParamsCache: IRichTextEditingMutationParams[] = [];
+
+    constructor(
+        private readonly _context: IRenderContext<DocumentDataModel>
+    ) {
+        super();
+    }
 
     clearUndoRedoMutationParamsCache() {
         this._undoMutationParamsCache = [];
@@ -88,9 +95,10 @@ export class IMEInputManagerService implements IDisposable {
         return { redoMutationParams, undoMutationParams, previousActiveRange: this._previousActiveRange };
     }
 
-    dispose(): void {
+    override dispose(): void {
         this._undoMutationParamsCache = [];
         this._redoMutationParamsCache = [];
+
         this._previousActiveRange = null;
     }
 }

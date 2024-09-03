@@ -14,34 +14,16 @@
  * limitations under the License.
  */
 
-import type { Nullable } from '@univerjs/core';
-import { createIdentifier, DataStreamTreeTokenType, ILogService, RxDisposable } from '@univerjs/core';
-import type { Observable, Subscription } from 'rxjs';
+import type { Documents, DocumentSkeleton, Engine, IFindNodeRestrictions, IMouseEvent, INodeInfo, INodePosition, IPointerEvent, IRenderContext, IRenderModule, IScrollObserverParam, ISuccinctDocRangeParam, ITextRangeWithStyle, ITextSelectionStyle, RANGE_DIRECTION, Scene, Viewport } from '@univerjs/engine-render';
+import { CURSOR_TYPE, getSystemHighlightColor, NORMAL_TEXT_SELECTION_PLUGIN_STYLE, PageLayoutType, ScrollTimer, Vector2 } from '@univerjs/engine-render';
+import type { DocumentDataModel, Nullable } from '@univerjs/core';
+import { DataStreamTreeTokenType, ILogService, RxDisposable } from '@univerjs/core';
+import type { Subscription } from 'rxjs';
 import { BehaviorSubject, fromEvent, Subject } from 'rxjs';
-
-import { CURSOR_TYPE } from '../../../basics/const';
-import { PageLayoutType } from '../../../basics/i-document-skeleton-cached';
-import type { IMouseEvent, IPointerEvent } from '../../../basics/i-events';
-import type { INodeInfo, INodePosition } from '../../../basics/interfaces';
-import type {
-    ISuccinctDocRangeParam,
-    ITextRangeWithStyle,
-    ITextSelectionStyle,
-    RANGE_DIRECTION,
-} from '../../../basics/range';
-import { NORMAL_TEXT_SELECTION_PLUGIN_STYLE } from '../../../basics/range';
-import { Vector2 } from '../../../basics/vector2';
-import type { Engine } from '../../../engine';
-import type { Scene } from '../../../scene';
-import { ScrollTimer } from '../../../scroll-timer';
-import type { IScrollObserverParam, Viewport } from '../../../viewport';
-import type { DocumentSkeleton, IFindNodeRestrictions } from '../layout/doc-skeleton';
-import type { Documents } from '../document';
-import { getSystemHighlightColor } from '../../../basics/tools';
-import { TextRange } from './text-range';
 import type { RectRange } from './rect-range';
 import { getCanvasOffsetByEngine, getParagraphInfoByGlyph, getRangeListFromCharIndex, getRangeListFromSelection, getRectRangeFromCharIndex, getTextRangeFromCharIndex } from './selection-utils';
 import { DOC_RANGE_TYPE } from './range-interface';
+import { TextRange } from './text-range';
 
 export interface ITextSelectionInnerParam {
     textRanges: TextRange[];
@@ -65,52 +47,6 @@ export interface IActiveTextRange {
     style: ITextSelectionStyle;
 }
 
-export interface ITextSelectionRenderManager {
-    readonly onInputBefore$: Observable<Nullable<IEditorInputConfig>>;
-    readonly onKeydown$: Observable<Nullable<IEditorInputConfig>>;
-    readonly onInput$: Observable<Nullable<IEditorInputConfig>>;
-    readonly onPointerDown$: Observable<void>;
-    readonly onCompositionstart$: Observable<Nullable<IEditorInputConfig>>;
-    readonly onCompositionupdate$: Observable<Nullable<IEditorInputConfig>>;
-    readonly onCompositionend$: Observable<Nullable<IEditorInputConfig>>;
-    readonly onSelectionStart$: Observable<Nullable<INodePosition>>;
-    readonly onPaste$: Observable<Nullable<IEditorInputConfig>>;
-    readonly onFocus$: Observable<Nullable<IEditorInputConfig>>;
-    readonly onBlur$: Observable<Nullable<IEditorInputConfig>>;
-    readonly textSelectionInner$: Observable<Nullable<ITextSelectionInnerParam>>;
-
-    __getEditorContainer(): HTMLElement;
-    getViewPort(): Viewport;
-    enableSelection(): void;
-    disableSelection(): void;
-    setSegment(id: string): void;
-    getSegment(): string;
-    setSegmentPage(pageIndex: number): void;
-    getSegmentPage(): number;
-    setStyle(style: ITextSelectionStyle): void;
-    resetStyle(): void;
-
-    removeAllRanges(): void;
-    addDocRanges(ranges: ISuccinctDocRangeParam[], isEditing?: boolean, options?: { [key: string]: boolean }): void;
-
-    sync(): void;
-
-    activate(x: number, y: number): void;
-    deactivate(): void;
-    hasFocus(): boolean;
-    focus(): void;
-    blur(): void;
-    focusEditor(): void;
-    blurEditor(): void;
-
-    changeRuntime(docSkeleton: DocumentSkeleton, scene: Scene, document: Documents): void;
-    dispose(): void;
-    handleDblClick(evt: IPointerEvent | IMouseEvent): void;
-    handleTripleClick(evt: IPointerEvent | IMouseEvent): void;
-    onPointDown(evt: IPointerEvent | IMouseEvent): void;
-    setCursorManually(evtOffsetX: number, evtOffsetY: number): void;
-}
-
 export interface IEditorInputConfig {
     event: Event | CompositionEvent | KeyboardEvent;
     content?: string;
@@ -118,7 +54,7 @@ export interface IEditorInputConfig {
     rangeList?: TextRange[];
 }
 
-export class TextSelectionRenderManager extends RxDisposable implements ITextSelectionRenderManager {
+export class DocSelectionRenderService extends RxDisposable implements IRenderModule {
     private readonly _onInputBefore$ = new Subject<Nullable<IEditorInputConfig>>();
     readonly onInputBefore$ = this._onInputBefore$.asObservable();
 
@@ -190,7 +126,10 @@ export class TextSelectionRenderManager extends RxDisposable implements ITextSel
     private _scenePointerUpSubs: Array<Subscription> = [];
     private _editorFocusing = true;
 
-    constructor(@ILogService private readonly _logService: ILogService) {
+    constructor(
+        private readonly _context: IRenderContext<DocumentDataModel>,
+        @ILogService private readonly _logService: ILogService
+    ) {
         super();
         this._initDOM();
         this._setSystemHighlightColorToStyle();
@@ -486,6 +425,7 @@ export class TextSelectionRenderManager extends RxDisposable implements ITextSel
     }
 
     // Handle pointer down.
+    // eslint-disable-next-line max-lines-per-function, complexity
     onPointDown(evt: IPointerEvent | IMouseEvent) {
         if (!this._scene || !this._isSelectionEnabled) {
             return;
@@ -867,7 +807,7 @@ export class TextSelectionRenderManager extends RxDisposable implements ITextSel
 
     private _updateActiveRangePosition(position: INodePosition) {
         if (!this._scene) {
-            this._logService.error('[TextSelectionRenderManager] _updateActiveRangeFocusPosition: scene is null');
+            this._logService.error('[DocSelectionRenderService] _updateActiveRangeFocusPosition: scene is null');
 
             return;
         }
@@ -876,7 +816,7 @@ export class TextSelectionRenderManager extends RxDisposable implements ITextSel
 
         if (activeTextRange == null || activeTextRange.anchorNodePosition == null) {
             this._logService.error(
-                '[TextSelectionRenderManager] _updateActiveRangeFocusPosition: active range has no anchor'
+                '[DocSelectionRenderService] _updateActiveRangeFocusPosition: active range has no anchor'
             );
 
             return;
@@ -950,6 +890,7 @@ export class TextSelectionRenderManager extends RxDisposable implements ITextSel
         this.activate(canvasLeft, canvasTop);
     }
 
+    // eslint-disable-next-line complexity
     private _moving(moveOffsetX: number, moveOffsetY: number) {
         if (this._docSkeleton == null) {
             return;
@@ -1078,6 +1019,7 @@ export class TextSelectionRenderManager extends RxDisposable implements ITextSel
     }
 
     // FIXME: listeners here are not correctly disposed
+    // eslint-disable-next-line max-lines-per-function
     private _initInputEvents() {
         this.disposeWithMe(
             fromEvent(this._input, 'keydown').subscribe((e) => {
@@ -1239,7 +1181,3 @@ export class TextSelectionRenderManager extends RxDisposable implements ITextSel
         this._onSelectionStart$.complete();
     }
 }
-
-export const ITextSelectionRenderManager = createIdentifier<TextSelectionRenderManager>(
-    'univer.doc.text-selection-render-manager'
-);

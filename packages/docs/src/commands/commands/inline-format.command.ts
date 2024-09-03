@@ -24,7 +24,7 @@ import {
     TextX, TextXActionType,
 } from '@univerjs/core';
 import type { IDocRange } from '@univerjs/engine-render';
-import { serializeDocRange, TextSelectionManagerService } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService, serializeDocRange } from '../../services/text-selection-manager.service';
 import type { IRichTextEditingMutationParams } from '../mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../mutations/core-editing.mutation';
 import { getRichTextEditPath } from '../util';
@@ -232,7 +232,7 @@ export const SetInlineFormatCommand: ICommand<ISetInlineFormatCommandParams> = {
     handler: async (accessor, params: ISetInlineFormatCommandParams) => {
         const { value, preCommandId } = params;
         const commandService = accessor.get(ICommandService);
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
 
         const docRanges = textSelectionManagerService.getDocRanges();

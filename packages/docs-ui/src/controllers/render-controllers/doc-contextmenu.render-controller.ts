@@ -22,9 +22,8 @@ import {
     DOCS_NORMAL_EDITOR_UNIT_ID_KEY,
     DOCS_ZEN_EDITOR_UNIT_ID_KEY,
     ICommandService,
-    Inject,
 } from '@univerjs/core';
-import { RichTextEditingMutation, TextSelectionManagerService } from '@univerjs/docs';
+import { RichTextEditingMutation } from '@univerjs/docs';
 import type { Documents, IRenderContext, IRenderModule } from '@univerjs/engine-render';
 import { IContextMenuService, MenuPosition } from '@univerjs/ui';
 
@@ -43,7 +42,6 @@ export class DocContextMenuRenderController extends Disposable implements IRende
     constructor(
         private readonly _context: IRenderContext<Workbook>,
         @IContextMenuService private readonly _contextMenuService: IContextMenuService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService,
         @ICommandService private readonly _commandService: ICommandService
     ) {
         super();

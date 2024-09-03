@@ -18,7 +18,7 @@ import type { DocumentDataModel, ICommand, IDocumentData, Injector, Univer } fro
 import { ICommandService, IUniverInstanceService, RedoCommand, UndoCommand, UniverInstanceType } from '@univerjs/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { TextSelectionManagerService } from '../../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../../services/text-selection-manager.service';
 import { RichTextEditingMutation } from '../../mutations/core-editing.mutation';
 import { SetTextSelectionsOperation } from '../../operations/text-selection.operation';
 import { CoverContentCommand, ReplaceContentCommand } from '../replace-content.command';
@@ -83,7 +83,7 @@ describe('replace or cover content of document', () => {
         commandService.registerCommand(SetTextSelectionsOperation);
         commandService.registerCommand(RichTextEditingMutation as unknown as ICommand);
 
-        const selectionManager = get(TextSelectionManagerService);
+        const selectionManager = get(DocSelectionManagerService);
 
         selectionManager.setCurrentSelection({
             unitId: 'test-doc',

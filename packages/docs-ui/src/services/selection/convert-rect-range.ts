@@ -15,12 +15,8 @@
  */
 
 import { type Nullable, Tools } from '@univerjs/core';
-import type { IDocumentSkeletonGlyph, IDocumentSkeletonPage, IDocumentSkeletonRow, IDocumentSkeletonTable, INodePosition, IPoint } from '../../../basics';
-import { DocumentSkeletonPageType } from '../../../basics';
-import type { IDocumentOffsetConfig } from '../document';
-import type { DocumentSkeleton } from '../layout/doc-skeleton';
-import { Liquid } from '../liquid';
-import { getTableIdAndSliceIndex } from '../layout/block/table';
+import type { DocumentSkeleton, IDocumentOffsetConfig, IDocumentSkeletonGlyph, IDocumentSkeletonPage, IDocumentSkeletonRow, IDocumentSkeletonTable, INodePosition, IPoint } from '@univerjs/engine-render';
+import { DocumentSkeletonPageType, getTableIdAndSliceIndex, Liquid } from '@univerjs/engine-render';
 import { compareNodePositionLogic, getPageFromPath, pushToPoints } from './convert-text-range';
 
 // The anchor and focus need to be in the same table,
@@ -137,6 +133,7 @@ export class NodePositionConvertToRectRange {
         // super
     }
 
+    // eslint-disable-next-line max-lines-per-function
     getRangePointData(startNodePosition: INodePosition, endNodePosition: INodePosition) {
         const pointGroup: IPoint[][] = [];
         const docSkeleton = this._docSkeleton;

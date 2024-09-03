@@ -26,7 +26,7 @@ import {
     UpdateDocsAttributeType,
 } from '@univerjs/core';
 
-import { serializeDocRange, TextSelectionManagerService } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService, serializeDocRange } from '../../services/text-selection-manager.service';
 import type { IRichTextEditingMutationParams } from '../mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../mutations/core-editing.mutation';
 import { getRichTextEditPath } from '../util';
@@ -43,7 +43,7 @@ export const AlignOperationCommand: ICommand<IAlignOperationCommandParams> = {
 
     // eslint-disable-next-line max-lines-per-function
     handler: (accessor, params: IAlignOperationCommandParams) => {
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
 

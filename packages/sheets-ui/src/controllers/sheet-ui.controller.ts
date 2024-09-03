@@ -27,7 +27,7 @@ import {
 import type { IMenuItemFactory, MenuConfig } from '@univerjs/ui';
 import { BuiltInUIPart, ComponentManager, ILayoutService, IMenuService, IShortcutService, IUIPartsService } from '@univerjs/ui';
 
-import { ITextSelectionRenderManager } from '@univerjs/engine-render';
+import { IRenderManagerService } from '@univerjs/engine-render';
 import {
     AddWorksheetMergeAllCommand,
     AddWorksheetMergeCommand,
@@ -521,10 +521,12 @@ export class SheetUIController extends Disposable {
 
     protected _initFocusHandler(): void {
         this.disposeWithMe(
-            this._layoutService.registerFocusHandler(UniverInstanceType.UNIVER_SHEET, (_unitId: string) => {
+            this._layoutService.registerFocusHandler(UniverInstanceType.UNIVER_SHEET, (unitId: string) => {
                 // DEBT: `_unitId` is not used hence we cannot support Univer mode now
-                const textSelectionManagerService = this._injector.get(ITextSelectionRenderManager);
-                textSelectionManagerService.focus();
+                const renderManagerService = this._injector.get(IRenderManagerService);
+                const docSelectionRenderService = renderManagerService.getRenderById(unitId)!.with(DocSelectionRenderService);
+
+                docSelectionRenderService.focus();
             })
         );
     }

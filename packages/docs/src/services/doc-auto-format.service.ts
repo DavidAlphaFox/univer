@@ -18,7 +18,7 @@ import type { DocumentDataModel, ICommandInfo, ICustomRange, IDisposable, IParag
 import { Disposable, Inject, IUniverInstanceService, toDisposable, UniverInstanceType } from '@univerjs/core';
 import { getCustomRangesInterestsWithRange } from '../basics/custom-range';
 import type { ITextActiveRange } from './text-selection-manager.service';
-import { TextSelectionManagerService } from './text-selection-manager.service';
+import { DocSelectionManagerService } from './text-selection-manager.service';
 
 export interface IAutoFormatContext {
     unit: DocumentDataModel;
@@ -85,7 +85,7 @@ export class DocAutoFormatService extends Disposable {
     private _matches: Map<string, IAutoFormat[]> = new Map();
     constructor(
         @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService
+        @Inject(DocSelectionManagerService) private readonly _textSelectionManagerService: DocSelectionManagerService
     ) {
         super();
     }

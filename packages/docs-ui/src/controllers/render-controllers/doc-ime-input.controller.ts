@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-import type { Nullable } from '@univerjs/core';
+import type { DocumentDataModel, Nullable } from '@univerjs/core';
 import {
     Disposable,
     ICommandService,
     Inject,
     IUniverInstanceService,
-    LifecycleStages,
-    OnLifecycle,
     Tools,
 } from '@univerjs/core';
-import type { IEditorInputConfig } from '@univerjs/engine-render';
-import { IRenderManagerService, ITextSelectionRenderManager } from '@univerjs/engine-render';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { IRenderManagerService } from '@univerjs/engine-render';
 import type { Subscription } from 'rxjs';
 
-import { IMEInputCommand } from '../commands/commands/ime-input.command';
-import { DocSkeletonManagerService } from '../services/doc-skeleton-manager.service';
-import { IMEInputManagerService } from '../services/ime-input-manager.service';
-import { TextSelectionManagerService } from '../services/text-selection-manager.service';
+import { IMEInputCommand } from '../../commands/commands/ime-input.command';
+import { DocSkeletonManagerService } from '../../../../docs/src/services/doc-skeleton-manager.service';
+import { DocIMEInputManagerService } from '../../services/doc-ime-input-manager.service';
+import type { IEditorInputConfig } from '../../services/selection/doc-selection-render.service';
+import { DocSelectionRenderService } from '../../services/selection/doc-selection-render.service';
 
-@OnLifecycle(LifecycleStages.Rendered, IMEInputController)
-export class IMEInputController extends Disposable {
+export class DocIMEInputController extends Disposable implements IRenderModule {
     private _previousIMEContent: string = '';
 
     private _isCompositionStart: boolean = true;
@@ -46,11 +44,11 @@ export class IMEInputController extends Disposable {
     private _onEndSubscription: Nullable<Subscription>;
 
     constructor(
+        private readonly _context: IRenderContext<DocumentDataModel>,
         @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService,
         @IRenderManagerService private readonly _renderManagerSrv: IRenderManagerService,
-        @ITextSelectionRenderManager private readonly _textSelectionRenderManager: ITextSelectionRenderManager,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService,
-        @Inject(IMEInputManagerService) private readonly _imeInputManagerService: IMEInputManagerService,
+        @Inject(DocSelectionRenderService) private readonly _docSelectionRenderService: DocSelectionRenderService,
+        @Inject(DocIMEInputManagerService) private readonly _docImeInputManagerService: DocIMEInputManagerService,
         @ICommandService private readonly _commandService: ICommandService
     ) {
         super();
@@ -73,7 +71,7 @@ export class IMEInputController extends Disposable {
     }
 
     private _initialOnCompositionstart() {
-        this._onStartSubscription = this._textSelectionRenderManager.onCompositionstart$.subscribe((config) => {
+        this._onStartSubscription = this._docSelectionRenderService.onCompositionstart$.subscribe((config) => {
             if (config == null) {
                 return;
             }
@@ -86,18 +84,18 @@ export class IMEInputController extends Disposable {
                 return;
             }
 
-            this._imeInputManagerService.setActiveRange(Tools.deepClone(activeRange));
+            this._docImeInputManagerService.setActiveRange(Tools.deepClone(activeRange));
         });
     }
 
     private _initialOnCompositionUpdate() {
-        this._onUpdateSubscription = this._textSelectionRenderManager.onCompositionupdate$.subscribe(async (config) => {
+        this._onUpdateSubscription = this._docSelectionRenderService.onCompositionupdate$.subscribe((config) => {
             this._updateContent(config, true);
         });
     }
 
     private _initialOnCompositionend() {
-        this._onEndSubscription = this._textSelectionRenderManager.onCompositionend$.subscribe((config) => {
+        this._onEndSubscription = this._docSelectionRenderService.onCompositionend$.subscribe((config) => {
             this._updateContent(config, false);
         });
     }
@@ -153,8 +151,8 @@ export class IMEInputController extends Disposable {
 
         this._isCompositionStart = true;
 
-        this._imeInputManagerService.clearUndoRedoMutationParamsCache();
+        this._docImeInputManagerService.clearUndoRedoMutationParamsCache();
 
-        this._imeInputManagerService.setActiveRange(null);
+        this._docImeInputManagerService.setActiveRange(null);
     }
 }

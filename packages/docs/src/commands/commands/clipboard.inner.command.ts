@@ -37,7 +37,7 @@ import {
 import type { DocumentViewModel, ITextRangeWithStyle, RectRange, TextRange } from '@univerjs/engine-render';
 
 import { getRetainAndDeleteFromReplace } from '../../basics/retain-delete-params';
-import { TextSelectionManagerService } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../services/text-selection-manager.service';
 import type { IRichTextEditingMutationParams } from '../mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../mutations/core-editing.mutation';
 import { getCommandSkeleton, getRichTextEditPath } from '../util';
@@ -90,7 +90,7 @@ export const InnerPasteCommand: ICommand<IInnerPasteCommandParams> = {
     handler: async (accessor, params: IInnerPasteCommandParams) => {
         const { segmentId, textRanges, doc } = params;
         const commandService = accessor.get(ICommandService);
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const selections = textSelectionManagerService.getCurrentTextRanges();
         const { body, tableSource, drawings } = doc;
@@ -465,7 +465,7 @@ export const CutContentCommand: ICommand<IInnerCutCommandParams> = {
     handler: async (accessor, params: IInnerCutCommandParams) => {
         const { segmentId, textRanges } = params;
         const commandService = accessor.get(ICommandService);
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const selections = params.selections ?? textSelectionManagerService.getCurrentTextRanges();
         const rectRanges = textSelectionManagerService.getCurrentRectRanges();

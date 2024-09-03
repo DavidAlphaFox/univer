@@ -26,7 +26,8 @@ import {
 } from '@univerjs/core';
 import type { IRichTextEditingMutationParams } from '@univerjs/docs';
 import { getRichTextEditPath, RichTextEditingMutation } from '@univerjs/docs';
-import { type ITextRangeWithStyle, ITextSelectionRenderManager } from '@univerjs/engine-render';
+import { IRenderManagerService, type ITextRangeWithStyle } from '@univerjs/engine-render';
+import { DocSelectionRenderService } from '@univerjs/docs-ui';
 import type { IDeleteDrawingCommandParams } from './interfaces';
 
 /**
@@ -39,16 +40,18 @@ export const RemoveDocDrawingCommand: ICommand = {
     handler: (accessor: IAccessor, params?: IDeleteDrawingCommandParams) => {
         const commandService = accessor.get(ICommandService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
-        const textSelectionRenderManager = accessor.get(ITextSelectionRenderManager);
+        const renderManagerService = accessor.get(IRenderManagerService);
         const documentDataModel = univerInstanceService.getCurrentUniverDocInstance();
 
         if (params == null || documentDataModel == null) {
             return false;
         }
 
+        const docSelectionRenderService = renderManagerService.getRenderById(params.unitId)!.with(DocSelectionRenderService)!;
+
         const { drawings: removeDrawings } = params;
 
-        const segmentId = textSelectionRenderManager.getSegment() ?? '';
+        const segmentId = docSelectionRenderService.getSegment() ?? '';
 
         const textX = new TextX();
         const jsonX = JSONX.getInstance();

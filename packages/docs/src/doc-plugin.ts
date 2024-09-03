@@ -22,11 +22,9 @@ import {
     Plugin,
     UniverInstanceType,
 } from '@univerjs/core';
-import { ITextSelectionRenderManager, TextSelectionRenderManager } from '@univerjs/engine-render';
 import { BreakLineCommand } from './commands/commands/break-line.command';
 import { DeleteCommand, InsertCommand, UpdateCommand } from './commands/commands/core-editing.command';
 import { DeleteCustomBlockCommand, DeleteLeftCommand, DeleteRightCommand, MergeTwoParagraphCommand } from './commands/commands/delete.command';
-import { IMEInputCommand } from './commands/commands/ime-input.command';
 import {
     ResetInlineFormatTextBackgroundColorCommand,
     SetInlineFormatBoldCommand,
@@ -49,11 +47,8 @@ import { MoveCursorOperation, MoveSelectionOperation } from './commands/operatio
 import { SelectAllOperation } from './commands/operations/select-all.operation';
 import { SetDocZoomRatioOperation } from './commands/operations/set-doc-zoom-ratio.operation';
 import { SetTextSelectionsOperation } from './commands/operations/text-selection.operation';
-import { IMEInputController } from './controllers/ime-input.controller';
 import { MoveCursorController } from './controllers/move-cursor.controller';
-import { NormalInputController } from './controllers/normal-input.controller';
-import { IMEInputManagerService } from './services/ime-input-manager.service';
-import { TextSelectionManagerService } from './services/text-selection-manager.service';
+import { DocSelectionManagerService } from './services/text-selection-manager.service';
 import { DocStateChangeManagerService } from './services/doc-state-change-manager.service';
 import { AlignCenterCommand, AlignJustifyCommand, AlignLeftCommand, AlignOperationCommand, AlignRightCommand } from './commands/commands/paragraph-align.command';
 import { DocCustomRangeService } from './services/doc-custom-range.service';
@@ -110,7 +105,6 @@ export class UniverDocsPlugin extends Plugin {
                 DeleteCommand,
                 DeleteCustomBlockCommand,
                 UpdateCommand,
-                IMEInputCommand,
                 MergeTwoParagraphCommand,
                 RichTextEditingMutation,
                 ReplaceContentCommand,
@@ -158,20 +152,11 @@ export class UniverDocsPlugin extends Plugin {
             [
                 // services
                 [DocStateChangeManagerService],
-                [IMEInputManagerService],
-                [
-                    ITextSelectionRenderManager,
-                    {
-                        useClass: TextSelectionRenderManager,
-                    },
-                ],
-                [TextSelectionManagerService],
+                [DocSelectionManagerService],
                 [DocCustomRangeService],
                 [DocAutoFormatService],
 
                 // controllers
-                [NormalInputController],
-                [IMEInputController],
                 [MoveCursorController],
                 [DocCustomRangeController],
 

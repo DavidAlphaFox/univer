@@ -16,7 +16,7 @@
 
 import type { ICommandInfo, Nullable, Workbook } from '@univerjs/core';
 import { checkForSubstrings, Disposable, ICommandService, IUniverInstanceService, LifecycleStages, OnLifecycle, UniverInstanceType } from '@univerjs/core';
-import { IRenderManagerService, ITextSelectionRenderManager, ScrollBar } from '@univerjs/engine-render';
+import { IRenderManagerService, ScrollBar } from '@univerjs/engine-render';
 import type { IRichTextEditingMutationParams } from '@univerjs/docs';
 import { CoverContentCommand, DocSkeletonManagerService, RichTextEditingMutation, VIEWPORT_KEY } from '@univerjs/docs';
 import { IEditorService, SetEditorResizeOperation } from '@univerjs/ui';
@@ -64,6 +64,7 @@ export class DocEditorBridgeController extends Disposable {
         this._initialValueChange();
     }
 
+    // eslint-disable-next-line complexity
     private _resize(unitId: Nullable<string>) {
         if (unitId == null) {
             return;

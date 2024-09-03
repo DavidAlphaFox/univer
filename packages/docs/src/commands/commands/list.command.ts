@@ -33,7 +33,7 @@ import {
 import type { IActiveTextRange, IDocRange } from '@univerjs/engine-render';
 import { getCharSpaceApply, getNumberUnitValue } from '@univerjs/engine-render';
 
-import { serializeDocRange, TextSelectionManagerService } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService, serializeDocRange } from '../../services/text-selection-manager.service';
 import type { IRichTextEditingMutationParams } from '../mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../mutations/core-editing.mutation';
 import { getRichTextEditPath } from '../util';
@@ -48,7 +48,7 @@ export const ListOperationCommand: ICommand<IListOperationCommandParams> = {
     type: CommandType.COMMAND,
     // eslint-disable-next-line max-lines-per-function, complexity
     handler: (accessor, params: IListOperationCommandParams) => {
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
 
@@ -201,7 +201,7 @@ export const ChangeListTypeCommand: ICommand<IChangeListTypeCommandParams> = {
     type: CommandType.COMMAND,
     // eslint-disable-next-line max-lines-per-function
     handler: (accessor, params: IChangeListTypeCommandParams) => {
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
         const { listType } = params;
@@ -333,7 +333,7 @@ export const ChangeListNestingLevelCommand: ICommand<IChangeListNestingLevelComm
             return false;
         }
         const { type } = params;
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
         const docDataModel = univerInstanceService.getCurrentUniverDocInstance();
@@ -611,7 +611,7 @@ export const QuickListCommand: ICommand<IQuickListCommandParams> = {
         if (!params) {
             return false;
         }
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
         const docDataModel = univerInstanceService.getCurrentUniverDocInstance();

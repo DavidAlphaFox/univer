@@ -79,7 +79,11 @@ export function DesktopContextMenu() {
                         menuType={[menuType]}
                         onOptionSelect={(params) => {
                             const { label: id, commandId, value } = params;
-                            commandService && commandService.executeCommand(commandId ?? id as string, { value });
+
+                            if (commandService) {
+                                commandService.executeCommand(commandId ?? id as string, { value });
+                            }
+
                             const textSelectionRenderManager = injector.get(ITextSelectionRenderManager);
                             textSelectionRenderManager.focus();
                             setVisible(false);

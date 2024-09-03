@@ -18,7 +18,7 @@ import type { CustomDecorationType, DocumentDataModel, IAccessor, IMutationInfo,
 import { getBodySlice, IUniverInstanceService, JSONX, TextX, TextXActionType, Tools, UniverInstanceType, UpdateDocsAttributeType } from '@univerjs/core';
 import type { IRichTextEditingMutationParams } from '../commands/mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../commands/mutations/core-editing.mutation';
-import { serializeDocRange, TextSelectionManagerService } from '../services/text-selection-manager.service';
+import { DocSelectionManagerService, serializeDocRange } from '../services/text-selection-manager.service';
 
 interface IAddCustomDecorationParam {
     unitId: string;
@@ -85,7 +85,7 @@ interface IAddCustomDecorationFactoryParam {
 
 export function addCustomDecorationBySelectionFactory(accessor: IAccessor, param: IAddCustomDecorationFactoryParam) {
     const { segmentId, id, type } = param;
-    const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+    const textSelectionManagerService = accessor.get(DocSelectionManagerService);
     const univerInstanceService = accessor.get(IUniverInstanceService);
 
     const selections = textSelectionManagerService.getCurrentTextRanges();

@@ -17,13 +17,9 @@
 import type { ICommand, ICommandInfo } from '@univerjs/core';
 import { CommandType, ICommandService, IUniverInstanceService, JSONX, TextX, TextXActionType } from '@univerjs/core';
 import type { ITextRangeWithStyle } from '@univerjs/engine-render';
-
-import { getRetainAndDeleteFromReplace } from '../../basics/retain-delete-params';
-import { IMEInputManagerService } from '../../services/ime-input-manager.service';
-import type { IRichTextEditingMutationParams } from '../mutations/core-editing.mutation';
-import { RichTextEditingMutation } from '../mutations/core-editing.mutation';
-import { getInsertSelection } from '../../basics/selection';
-import { getRichTextEditPath } from '../util';
+import type { IRichTextEditingMutationParams } from '@univerjs/docs';
+import { getInsertSelection, getRetainAndDeleteFromReplace, getRichTextEditPath, RichTextEditingMutation } from '@univerjs/docs';
+import { DocIMEInputManagerService } from '../../services/doc-ime-input-manager.service';
 
 export interface IIMEInputCommandParams {
     unitId: string;
@@ -42,7 +38,7 @@ export const IMEInputCommand: ICommand<IIMEInputCommandParams> = {
     handler: async (accessor, params: IIMEInputCommandParams) => {
         const { unitId, newText, oldTextLen, isCompositionEnd, isCompositionStart } = params;
         const commandService = accessor.get(ICommandService);
-        const imeInputManagerService = accessor.get(IMEInputManagerService);
+        const imeInputManagerService = accessor.get(DocIMEInputManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const docDataModel = univerInstanceService.getCurrentUniverDocInstance();
 
@@ -88,23 +84,20 @@ export const IMEInputCommand: ICommand<IIMEInputCommandParams> = {
         const textX = new TextX();
         const jsonX = JSONX.getInstance();
 
-        let memoryCursor = 0;
         if (!previousActiveRange.collapsed && isCompositionStart) {
-            const { dos, retain, cursor } = getRetainAndDeleteFromReplace(previousActiveRange, segmentId, 0, body);
+            const { dos, retain } = getRetainAndDeleteFromReplace(previousActiveRange, segmentId, 0, body);
             textX.push(...dos);
             doMutation.params!.textRanges = [{
                 startOffset: startOffset + len + retain,
                 endOffset: startOffset + len + retain,
                 collapsed: true,
             }];
-            memoryCursor = cursor;
         } else {
             textX.push({
                 t: TextXActionType.RETAIN,
                 len: startOffset,
                 segmentId,
             });
-            memoryCursor = startOffset;
         }
 
         if (oldTextLen > 0) {

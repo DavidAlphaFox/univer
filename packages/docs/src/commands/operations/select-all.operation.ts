@@ -17,7 +17,7 @@
 import type { ICommand } from '@univerjs/core';
 import { CommandType, IUniverInstanceService } from '@univerjs/core';
 
-import { TextSelectionManagerService } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../services/text-selection-manager.service';
 
 interface ISelectAllOperationParams { }
 
@@ -26,7 +26,7 @@ export const SelectAllOperation: ICommand<ISelectAllOperationParams> = {
     type: CommandType.COMMAND,
     handler: async (accessor) => {
         const univerInstanceService = accessor.get(IUniverInstanceService);
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const docDataModel = univerInstanceService.getCurrentUniverDocInstance();
         const activeTextRange = textSelectionManagerService.getActiveTextRangeWithStyle();
         if (docDataModel == null || activeTextRange == null) {

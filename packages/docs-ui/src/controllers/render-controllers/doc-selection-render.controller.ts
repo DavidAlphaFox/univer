@@ -17,11 +17,12 @@
 import type { DocumentDataModel, ICommandInfo } from '@univerjs/core';
 import { Disposable, ICommandService, Inject, isInternalEditorID, IUniverInstanceService, UniverInstanceType } from '@univerjs/core';
 import type { Documents, IMouseEvent, IPointerEvent, IRenderContext, IRenderModule, RenderComponentType } from '@univerjs/engine-render';
-import { CURSOR_TYPE, DocumentEditArea, ITextSelectionRenderManager, PageLayoutType, Vector2 } from '@univerjs/engine-render';
+import { CURSOR_TYPE, DocumentEditArea, PageLayoutType, Vector2 } from '@univerjs/engine-render';
 
 import { IEditorService } from '@univerjs/ui';
 import type { ISetDocZoomRatioOperationParams } from '@univerjs/docs';
-import { DocSkeletonManagerService, neoGetDocObject, SetDocZoomRatioOperation, TextSelectionManagerService } from '@univerjs/docs';
+import { DocSelectionManagerService, DocSkeletonManagerService, neoGetDocObject, SetDocZoomRatioOperation } from '@univerjs/docs';
+import { DocSelectionRenderService } from '../../services/selection/doc-selection-render.service';
 
 export class DocTextSelectionRenderController extends Disposable implements IRenderModule {
     private _loadedMap = new WeakSet<RenderComponentType>();
@@ -31,9 +32,9 @@ export class DocTextSelectionRenderController extends Disposable implements IRen
         @ICommandService private readonly _commandService: ICommandService,
         @IEditorService private readonly _editorService: IEditorService,
         @IUniverInstanceService private readonly _instanceSrv: IUniverInstanceService,
-        @ITextSelectionRenderManager private readonly _textSelectionRenderManager: ITextSelectionRenderManager,
+        @Inject(DocSelectionRenderService) private readonly _docSelectionRenderService: DocSelectionRenderService,
         @Inject(DocSkeletonManagerService) private readonly _docSkeletonManagerService: DocSkeletonManagerService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService
+        @Inject(DocSelectionManagerService) private readonly _docSelectionManagerService: DocSelectionManagerService
     ) {
         super();
 
@@ -44,6 +45,8 @@ export class DocTextSelectionRenderController extends Disposable implements IRen
         this._init();
         this._skeletonListener();
         this._commandExecutedListener();
+        this._refreshListener();
+        this._syncSelection();
     }
 
     private _init() {
@@ -57,6 +60,40 @@ export class DocTextSelectionRenderController extends Disposable implements IRen
             this._initialMain(unitId);
             this._loadedMap.add(docObject.document);
         }
+    }
+
+    private _refreshListener() {
+        this.disposeWithMe(
+            this._docSelectionManagerService.refreshSelection$.subscribe((params) => {
+                if (params == null) {
+                    return;
+                }
+
+                const { unitId, docRanges, isEditing, options } = params;
+
+                if (unitId !== this._context.unitId) {
+                    return;
+                }
+
+                this._docSelectionRenderService.removeAllRanges();
+                if (docRanges.length) {
+                    this._docSelectionRenderService.addDocRanges(docRanges, isEditing, options);
+                }
+            })
+        );
+    }
+
+    private _syncSelection() {
+        this.disposeWithMe(
+            this._docSelectionRenderService.textSelectionInner$
+                .subscribe((params) => {
+                    if (params == null) {
+                        return;
+                    }
+
+                    this._docSelectionManagerService.replaceTextRangesWithNoRefresh(params);
+                })
+        );
     }
 
     // eslint-disable-next-line max-lines-per-function
@@ -111,7 +148,7 @@ export class DocTextSelectionRenderController extends Disposable implements IRen
                 }
             }
 
-            this._textSelectionRenderManager.onPointDown(evt);
+            this._docSelectionRenderService.onPointDown(evt);
 
             if (this._editorService.getEditor(unitId)) {
                 /**
@@ -127,7 +164,7 @@ export class DocTextSelectionRenderController extends Disposable implements IRen
 
                 setTimeout(() => {
                     this._setEditorFocus(unitId);
-                    this._textSelectionRenderManager.setCursorManually(offsetX, offsetY);
+                    this._docSelectionRenderService.setCursorManually(offsetX, offsetY);
                 }, 0);
             }
 
@@ -141,7 +178,7 @@ export class DocTextSelectionRenderController extends Disposable implements IRen
                 return;
             }
 
-            this._textSelectionRenderManager.handleDblClick(evt);
+            this._docSelectionRenderService.handleDblClick(evt);
         }));
 
         this.disposeWithMe(document.onTripleClick$.subscribeEvent((evt: IPointerEvent | IMouseEvent) => {
@@ -149,7 +186,7 @@ export class DocTextSelectionRenderController extends Disposable implements IRen
                 return;
             }
 
-            this._textSelectionRenderManager.handleTripleClick(evt);
+            this._docSelectionRenderService.handleTripleClick(evt);
         }));
     }
 
@@ -200,13 +237,13 @@ export class DocTextSelectionRenderController extends Disposable implements IRen
                 const params = command.params as ISetDocZoomRatioOperationParams;
                 const { unitId: documentId } = params;
 
-                const unitId = this._textSelectionManagerService.getCurrentSelection()?.unitId;
+                const unitId = this._docSelectionManagerService.getCurrentSelection()?.unitId;
 
                 if (documentId !== unitId) {
                     return;
                 }
 
-                this._textSelectionManagerService.refreshSelection();
+                this._docSelectionManagerService.refreshSelection();
             }
         })
         );
@@ -223,8 +260,8 @@ export class DocTextSelectionRenderController extends Disposable implements IRen
             const isInternalEditor = isInternalEditorID(unitId);
 
             if (init || !isInternalEditorID(this._context.unitId)) {
-                this._textSelectionRenderManager.changeRuntime(skeleton, scene, mainComponent as Documents);
-                this._textSelectionManagerService.setCurrentSelectionNotRefresh({
+                this._docSelectionRenderService.changeRuntime(skeleton, scene, mainComponent as Documents);
+                this._docSelectionManagerService.setCurrentSelectionNotRefresh({
                     unitId,
                     subUnitId: '',
                 });
@@ -233,7 +270,7 @@ export class DocTextSelectionRenderController extends Disposable implements IRen
                 // and can be set to the previous cursor position in the future.
                 // The skeleton of the editor has not been calculated at this moment, and it is determined whether it is an editor by its ID.
                 if (!isInternalEditor) {
-                    this._textSelectionManagerService.replaceTextRanges([
+                    this._docSelectionManagerService.replaceTextRanges([
                         {
                             startOffset: 0,
                             endOffset: 0,

@@ -25,9 +25,8 @@ export * from './basics/docs-view-key';
 
 export { type IUniverDocsConfig, UniverDocsPlugin } from './doc-plugin';
 export { DocSkeletonManagerService } from './services/doc-skeleton-manager.service';
-export { TextSelectionManagerService, serializeDocRange } from './services/text-selection-manager.service';
+export { DocSelectionManagerService, serializeDocRange } from './services/text-selection-manager.service';
 export { DocStateChangeManagerService, type IDocStateChangeParams } from './services/doc-state-change-manager.service';
-export { IMEInputManagerService } from './services/ime-input-manager.service';
 export { DocCustomRangeService, type ICustomRangeHook } from './services/doc-custom-range.service';
 
 // #region - all commands
@@ -45,7 +44,6 @@ export {
     type IUpdateCommandParams,
 } from './commands/commands/core-editing.command';
 export { DeleteLeftCommand, DeleteRightCommand, DeleteCustomBlockCommand, MergeTwoParagraphCommand, type IDeleteCustomBlockParams } from './commands/commands/delete.command';
-export { IMEInputCommand, type IIMEInputCommandParams } from './commands/commands/ime-input.command';
 export {
     SetInlineFormatBoldCommand,
     SetInlineFormatItalicCommand,

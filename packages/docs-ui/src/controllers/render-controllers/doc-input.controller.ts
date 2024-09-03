@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-import type { Nullable } from '@univerjs/core';
-import { Disposable, ICommandService, IUniverInstanceService, LifecycleStages, OnLifecycle } from '@univerjs/core';
-import { IRenderManagerService, ITextSelectionRenderManager } from '@univerjs/engine-render';
+import type { DocumentDataModel, Nullable } from '@univerjs/core';
+import { Disposable, ICommandService, Inject, IUniverInstanceService } from '@univerjs/core';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
 import type { Subscription } from 'rxjs';
+import { AfterSpaceCommand, DocSkeletonManagerService, InsertCommand } from '@univerjs/docs';
+import { DocSelectionRenderService } from '../../services/selection/doc-selection-render.service';
 
-import { InsertCommand } from '../commands/commands/core-editing.command';
-import { DocSkeletonManagerService } from '../services/doc-skeleton-manager.service';
-import { AfterSpaceCommand } from '../commands/commands/auto-format.command';
-
-@OnLifecycle(LifecycleStages.Rendered, NormalInputController)
-export class NormalInputController extends Disposable {
+export class DocInputController extends Disposable implements IRenderModule {
     private _onInputSubscription: Nullable<Subscription>;
 
     constructor(
+        private readonly _context: IRenderContext<DocumentDataModel>,
         @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService,
-        @IRenderManagerService private readonly _renderManagerService: IRenderManagerService,
-        @ITextSelectionRenderManager private readonly _textSelectionRenderManager: ITextSelectionRenderManager,
+        @Inject(DocSelectionRenderService) private readonly _docSelectionRenderService: DocSelectionRenderService,
+        @Inject(DocSkeletonManagerService) private readonly _docSkeletonManagerService: DocSkeletonManagerService,
         @ICommandService private readonly _commandService: ICommandService
     ) {
         super();
@@ -49,7 +47,7 @@ export class NormalInputController extends Disposable {
     }
 
     private _initialNormalInput() {
-        this._onInputSubscription = this._textSelectionRenderManager.onInput$.subscribe(async (config) => {
+        this._onInputSubscription = this._docSelectionRenderService.onInput$.subscribe(async (config) => {
             if (config == null) {
                 return;
             }
@@ -65,8 +63,7 @@ export class NormalInputController extends Disposable {
 
             const e = event as InputEvent;
 
-            const skeleton = this._renderManagerService.getRenderById(documentModel.getUnitId())
-                ?.with(DocSkeletonManagerService).getSkeleton();
+            const skeleton = this._docSkeletonManagerService.getSkeleton();
 
             if (e.data == null || skeleton == null) {
                 return;

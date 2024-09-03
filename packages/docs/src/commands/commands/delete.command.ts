@@ -32,7 +32,7 @@ import type { IActiveTextRange, ITextRangeWithStyle, RectRange, TextRange } from
 import { getParagraphByGlyph, hasListGlyph, isFirstGlyph, isIndentByGlyph } from '@univerjs/engine-render';
 
 import type { ITextActiveRange } from '../../services/text-selection-manager.service';
-import { TextSelectionManagerService } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../services/text-selection-manager.service';
 import type { IRichTextEditingMutationParams } from '../mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../mutations/core-editing.mutation';
 import { getDeleteSelection } from '../../basics/selection';
@@ -54,7 +54,7 @@ export const DeleteCustomBlockCommand: ICommand<IDeleteCustomBlockParams> = {
     id: 'doc.command.delete-custom-block',
     type: CommandType.COMMAND,
     handler: async (accessor, params: IDeleteCustomBlockParams) => {
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
 
@@ -145,7 +145,7 @@ export const MergeTwoParagraphCommand: ICommand<IMergeTwoParagraphParams> = {
     type: CommandType.COMMAND,
     // eslint-disable-next-line max-lines-per-function
     handler: async (accessor, params: IMergeTwoParagraphParams) => {
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
 
@@ -294,7 +294,7 @@ export const DeleteLeftCommand: ICommand = {
     type: CommandType.COMMAND,
     // eslint-disable-next-line max-lines-per-function, complexity
     handler: async (accessor) => {
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
 
@@ -512,7 +512,7 @@ export const DeleteRightCommand: ICommand = {
 
     // eslint-disable-next-line max-lines-per-function, complexity
     handler: async (accessor) => {
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const docDataModel = univerInstanceService.getCurrentUniverDocInstance();
         if (!docDataModel) {

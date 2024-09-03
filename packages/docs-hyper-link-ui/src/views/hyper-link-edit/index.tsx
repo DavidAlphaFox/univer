@@ -19,9 +19,10 @@ import React, { useEffect, useState } from 'react';
 import { getBodySlice, ICommandService, IUniverInstanceService, LocaleService, Tools, UniverInstanceType, useDependency, useObservable } from '@univerjs/core';
 import { DocHyperLinkModel } from '@univerjs/docs-hyper-link';
 import type { DocumentDataModel } from '@univerjs/core';
-import { ITextSelectionRenderManager } from '@univerjs/engine-render';
-import { getPlainTextFormBody, TextSelectionManagerService } from '@univerjs/docs';
+import { DocSelectionManagerService, getPlainTextFormBody } from '@univerjs/docs';
 import { KeyCode } from '@univerjs/ui';
+import { IRenderManagerService } from '@univerjs/engine-render';
+import { DocSelectionRenderService } from '@univerjs/docs-ui';
 import { DocHyperLinkPopupService } from '../../services/hyper-link-popup.service';
 import { AddDocHyperLinkCommand } from '../../commands/commands/add-link.command';
 import { UpdateDocHyperLinkCommand } from '../../commands/commands/update-link.command';
@@ -48,8 +49,9 @@ export const DocHyperLinkEdit = () => {
     const editing = useObservable(hyperLinkService.editingLink$);
     const commandService = useDependency(ICommandService);
     const univerInstanceService = useDependency(IUniverInstanceService);
-    const textSelectionRenderManager = useDependency(ITextSelectionRenderManager);
-    const textSelectionManagerService = useDependency(TextSelectionManagerService);
+    const renderManagerService = useDependency(IRenderManagerService);
+
+    const docSelectionManagerService = useDependency(DocSelectionManagerService);
     const [link, setLink] = useState('');
     const [label, setLabel] = useState('');
     const [showError, setShowError] = useState(false);
@@ -58,8 +60,10 @@ export const DocHyperLinkEdit = () => {
         ? univerInstanceService.getUnit<DocumentDataModel>(editing.unitId, UniverInstanceType.UNIVER_DOC) :
         univerInstanceService.getCurrentUnitForType<DocumentDataModel>(UniverInstanceType.UNIVER_DOC);
 
+    const docSelectionRenderService = renderManagerService.getRenderById(doc!.getUnitId())?.with(DocSelectionRenderService);
+
     useEffect(() => {
-        const activeRange = textSelectionManagerService.getActiveTextRangeWithStyle();
+        const activeRange = docSelectionManagerService.getActiveTextRangeWithStyle();
         if (!activeRange) {
             return;
         }
@@ -80,14 +84,20 @@ export const DocHyperLinkEdit = () => {
             const linkDetail = hyperLinkModel.getLink(doc.getUnitId(), matchedRange.rangeId);
             setLink(linkDetail?.payload ?? '');
         }
-    }, [doc, editing, hyperLinkModel, textSelectionManagerService, univerInstanceService]);
+    }, [doc, editing, hyperLinkModel, docSelectionManagerService, univerInstanceService]);
 
+    // TODO: @zhangwei, do not use docSelectionRenderService in this component.
     useEffect(() => {
-        textSelectionRenderManager.blurEditor();
+        if (docSelectionRenderService) {
+            docSelectionRenderService.blurEditor();
+        }
+
         return () => {
-            textSelectionRenderManager.focusEditor();
+            if (docSelectionRenderService) {
+                docSelectionRenderService.focusEditor();
+            }
         };
-    }, [textSelectionRenderManager]);
+    }, [docSelectionRenderService]);
 
     const handleCancel = () => {
         hyperLinkService.hideEditPopup();

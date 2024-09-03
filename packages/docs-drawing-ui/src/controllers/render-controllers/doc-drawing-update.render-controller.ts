@@ -22,10 +22,10 @@ import { IMessageService } from '@univerjs/ui';
 import { MessageType } from '@univerjs/design';
 import type { IDocDrawing } from '@univerjs/docs-drawing';
 import { IDocDrawingService } from '@univerjs/docs-drawing';
-import { DocSkeletonManagerService, RichTextEditingMutation, TextSelectionManagerService } from '@univerjs/docs';
-import { docDrawingPositionToTransform } from '@univerjs/docs-ui';
+import { DocSelectionManagerService, DocSkeletonManagerService, RichTextEditingMutation } from '@univerjs/docs';
+import { docDrawingPositionToTransform, DocSelectionRenderService } from '@univerjs/docs-ui';
 import type { Documents, Image, IRenderContext, IRenderModule } from '@univerjs/engine-render';
-import { DocumentEditArea, IRenderManagerService, ITextSelectionRenderManager } from '@univerjs/engine-render';
+import { DocumentEditArea, IRenderManagerService } from '@univerjs/engine-render';
 
 import type { IInsertImageOperationParams } from '../../commands/operations/insert-image.operation';
 import { InsertDocImageOperation } from '../../commands/operations/insert-image.operation';
@@ -40,7 +40,7 @@ export class DocDrawingUpdateRenderController extends Disposable implements IRen
     constructor(
         private readonly _context: IRenderContext<DocumentDataModel>,
         @ICommandService private readonly _commandService: ICommandService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService,
+        @Inject(DocSelectionManagerService) private readonly _docSelectionManagerService: DocSelectionManagerService,
         @IRenderManagerService private readonly _renderManagerSrv: IRenderManagerService,
         @IImageIoService private readonly _imageIoService: IImageIoService,
         @IDocDrawingService private readonly _docDrawingService: IDocDrawingService,
@@ -48,8 +48,7 @@ export class DocDrawingUpdateRenderController extends Disposable implements IRen
         @IContextService private readonly _contextService: IContextService,
         @IMessageService private readonly _messageService: IMessageService,
         @Inject(LocaleService) private readonly _localeService: LocaleService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManager: TextSelectionManagerService,
-        @ITextSelectionRenderManager private readonly _textSelectionRenderManager: ITextSelectionRenderManager,
+        @Inject(DocSelectionRenderService) private readonly _docSelectionRenderService: DocSelectionRenderService,
         @Inject(DocRefreshDrawingsService) private readonly _docRefreshDrawingsService: DocRefreshDrawingsService
     ) {
         super();
@@ -202,7 +201,7 @@ export class DocDrawingUpdateRenderController extends Disposable implements IRen
     private _getImagePosition(
         imageWidth: number, imageHeight: number
     ): Nullable<IDocDrawingPosition> {
-        const activeTextRange = this._textSelectionManagerService.getActiveTextRange();
+        const activeTextRange = this._docSelectionManagerService.getActiveTextRange();
         const position = activeTextRange?.getAbsolutePosition() || {
             left: 0,
             top: 0,
@@ -287,18 +286,18 @@ export class DocDrawingUpdateRenderController extends Disposable implements IRen
                     this._contextService.setContextValue(FOCUSING_COMMON_DRAWINGS, true);
                     this._docDrawingService.focusDrawing(params);
                     // Need to remove text selections when focus drawings.
-                    const activeTextRange = this._textSelectionManager.getActiveTextRange();
+                    const activeTextRange = this._docSelectionManagerService.getActiveTextRange();
                     if (activeTextRange) {
-                        this._textSelectionManager.replaceTextRanges([]);
+                        this._docSelectionManagerService.replaceTextRanges([]);
                     }
                     // this._textSelectionRenderManager.blur();
 
-                    const prevSegmentId = this._textSelectionRenderManager.getSegment();
+                    const prevSegmentId = this._docSelectionRenderService.getSegment();
                     const segmentId = this._findSegmentIdByDrawingId(params[0].drawingId);
 
                     // Change segmentId when click drawing in different segment.
                     if (prevSegmentId !== segmentId) {
-                        this._textSelectionRenderManager.setSegment(segmentId);
+                        this._docSelectionRenderService.setSegment(segmentId);
                     }
 
                     if (transformer) {

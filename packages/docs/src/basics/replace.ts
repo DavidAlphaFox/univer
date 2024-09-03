@@ -19,7 +19,7 @@ import { IUniverInstanceService, JSONX, TextX, TextXActionType } from '@univerjs
 import type { ITextRangeWithStyle } from '@univerjs/engine-render';
 import type { IRichTextEditingMutationParams } from '../commands/mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../commands/mutations/core-editing.mutation';
-import { TextSelectionManagerService } from '../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../services/text-selection-manager.service';
 import { getRichTextEditPath } from '../commands/util';
 import { isIntersecting, shouldDeleteCustomRange } from './custom-range';
 import { getDeleteSelection } from './selection';
@@ -142,7 +142,7 @@ export function replaceSelectionFactory(accessor: IAccessor, params: IReplaceSel
     }
     if (!body) return false;
 
-    const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+    const textSelectionManagerService = accessor.get(DocSelectionManagerService);
     const selection = params.selection ?? textSelectionManagerService.getActiveTextRangeWithStyle();
     if (!selection || !body) {
         return false;

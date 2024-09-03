@@ -15,12 +15,8 @@
  */
 
 import { COLORS, type Nullable, Rectangle, Tools } from '@univerjs/core';
-import type { INodePosition, IPoint, ITextSelectionStyle } from '../../../basics';
-import { getColor, NORMAL_TEXT_SELECTION_PLUGIN_STYLE, RANGE_DIRECTION } from '../../../basics';
-import type { ThinScene } from '../../../thin-scene';
-import type { Documents } from '../document';
-import type { DocumentSkeleton } from '../layout/doc-skeleton';
-import { RegularPolygon } from '../../../shape';
+import type { Documents, DocumentSkeleton, INodePosition, IPoint, ITextSelectionStyle, ThinScene } from '@univerjs/engine-render';
+import { getColor, NORMAL_TEXT_SELECTION_PLUGIN_STYLE, RANGE_DIRECTION, RegularPolygon } from '@univerjs/engine-render';
 import type { IDocRange } from './range-interface';
 import { DOC_RANGE_TYPE } from './range-interface';
 import { compareNodePositionInTable, NodePositionConvertToRectRange } from './convert-rect-range';

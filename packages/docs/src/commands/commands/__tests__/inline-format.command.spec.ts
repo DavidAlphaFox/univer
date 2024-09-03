@@ -18,7 +18,7 @@ import type { DocumentDataModel, ICommand, Injector, IStyleBase, Univer } from '
 import { BooleanNumber, ICommandService, IUniverInstanceService, RedoCommand, UndoCommand, UniverInstanceType } from '@univerjs/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { TextSelectionManagerService } from '../../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../../services/text-selection-manager.service';
 import { RichTextEditingMutation } from '../../mutations/core-editing.mutation';
 import { SetTextSelectionsOperation } from '../../operations/text-selection.operation';
 import {
@@ -78,7 +78,7 @@ describe('Test inline format commands', () => {
         commandService.registerCommand(SetTextSelectionsOperation);
         commandService.registerCommand(RichTextEditingMutation as unknown as ICommand);
 
-        const selectionManager = get(TextSelectionManagerService);
+        const selectionManager = get(DocSelectionManagerService);
 
         selectionManager.setCurrentSelection({
             unitId: 'test-doc',

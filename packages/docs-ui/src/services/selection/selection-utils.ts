@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
+/**
+ * Copyright 2023-present DreamNum Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { type Nullable, Tools } from '@univerjs/core';
-import type { IDocumentSkeletonGlyph, INodePosition, ITextSelectionStyle } from '../../../basics';
-import { RANGE_DIRECTION } from '../../../basics';
-import { getOffsetRectForDom } from '../../../basics/position';
-import type { DocumentSkeleton } from '../layout/doc-skeleton';
-import type { Engine } from '../../../engine';
-import type { Documents } from '../document';
-import type { Scene } from '../../../scene';
+import type { Documents, DocumentSkeleton, Engine, IDocumentSkeletonGlyph, INodePosition, ITextSelectionStyle, Scene } from '@univerjs/engine-render';
+import { getOffsetRectForDom, RANGE_DIRECTION } from '@univerjs/engine-render';
 import { convertPositionsToRectRanges, RectRange } from './rect-range';
 import { TextRange } from './text-range';
 import { isInSameTableCell, isValidRectRange } from './convert-rect-range';
@@ -100,6 +111,7 @@ export function getRangeListFromCharIndex(
     );
 }
 
+// eslint-disable-next-line max-lines-per-function, complexity
 export function getRangeListFromSelection(
     anchorPosition: INodePosition,
     focusPosition: INodePosition,

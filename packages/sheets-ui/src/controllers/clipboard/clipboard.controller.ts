@@ -157,6 +157,7 @@ export class SheetClipboardController extends RxDisposable {
         this.disposeWithMe({ dispose: () => disposables.forEach((d) => d.dispose()) });
     }
 
+    // eslint-disable-next-line max-lines-per-function
     private _initCopyingHooks(): ISheetClipboardHook {
         const self = this;
         let currentSheet: Worksheet | null = null;

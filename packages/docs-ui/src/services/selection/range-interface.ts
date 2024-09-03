@@ -15,7 +15,7 @@
  */
 
 import type { Nullable } from '@univerjs/core';
-import type { INodePosition, ITextSelectionStyle, RANGE_DIRECTION } from '../../../basics';
+import type { INodePosition, ITextSelectionStyle, RANGE_DIRECTION } from '@univerjs/engine-render';
 
 export enum DOC_RANGE_TYPE {
     RECT = 'RECT',

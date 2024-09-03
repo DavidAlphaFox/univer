@@ -27,7 +27,7 @@ import {
     Tools, UniverInstanceType } from '@univerjs/core';
 import { IEditorService, IShortcutService } from '@univerjs/ui';
 import { IRenderManagerService } from '@univerjs/engine-render';
-import { DocInterceptorService, DocSkeletonManagerService } from '@univerjs/docs';
+import { CutContentCommand, DocInterceptorService, DocSkeletonManagerService, InnerPasteCommand } from '@univerjs/docs';
 import {
     MoveCursorDownShortcut,
     MoveCursorLeftShortcut,
@@ -46,16 +46,16 @@ import { AppUIController } from './controllers';
 import { DocUIController } from './controllers/doc-ui.controller';
 import { BreakLineShortcut, DeleteLeftShortcut, DeleteRightShortcut } from './shortcuts/core-editing.shortcut';
 import { DocClipboardService, IDocClipboardService } from './services/clipboard/clipboard.service';
-import { DocClipboardController } from './controllers/clipboard.controller';
+import { DocClipboardController } from './controllers/render-controllers/doc-clipboard.controller';
 import { DocEditorBridgeController } from './controllers/doc-editor-bridge.controller';
 import { DocRenderController } from './controllers/render-controllers/doc.render-controller';
 import { DocZoomRenderController } from './controllers/render-controllers/zoom.render-controller';
-import { DocTextSelectionRenderController } from './controllers/render-controllers/text-selection.render-controller';
+import { DocTextSelectionRenderController } from './controllers/render-controllers/doc-selection-render.controller';
 import { DocBackScrollRenderController } from './controllers/render-controllers/back-scroll.render-controller';
 import { DocCanvasPopManagerService } from './services/doc-popup-manager.service';
 import { DocsRenderService } from './services/docs-render.service';
 import { DocHeaderFooterController } from './controllers/doc-header-footer.controller';
-import { DocContextMenuRenderController } from './controllers/render-controllers/contextmenu.render-controller';
+import { DocContextMenuRenderController } from './controllers/render-controllers/doc-contextmenu.render-controller';
 import { DocPageLayoutService } from './services/doc-page-layout.service';
 import { DocResizeRenderController } from './controllers/render-controllers/doc-resize.render-controller';
 import { DocEventManagerService } from './services/doc-event-manager.service';
@@ -63,10 +63,14 @@ import { DocAutoFormatController } from './controllers/doc-auto-format.controlle
 import { ShiftTabShortCut } from './shortcuts/format.shortcut';
 import { DocChecklistRenderController } from './controllers/render-controllers/doc-checklist.render-controller';
 import { DocParagraphSettingController } from './controllers/doc-paragraph-setting.controller';
-
 import { DocParagraphSettingPanelOperation } from './commands/operations/doc-paragraph-setting-panel.operation';
 import { DocParagraphSettingCommand } from './commands/commands/doc-paragraph-setting.command';
 import { DocTableController } from './controllers/doc-table.controller';
+import { DocSelectionRenderService } from './services/selection/doc-selection-render.service';
+import { DocIMEInputManagerService } from './services/doc-ime-input-manager.service';
+import { IMEInputCommand } from './commands/commands/ime-input.command';
+import { DocIMEInputController } from './controllers/render-controllers/doc-ime-input.controller';
+import { DocCopyCommand, DocCutCommand, DocPasteCommand } from './types';
 
 export class UniverDocsUIPlugin extends Plugin {
     static override pluginName = DOC_UI_PLUGIN_NAME;
@@ -98,9 +102,17 @@ export class UniverDocsUIPlugin extends Plugin {
     }
 
     private _initCommand() {
-        [DocParagraphSettingCommand, DocParagraphSettingPanelOperation].forEach((e) => {
+        [
+            IMEInputCommand,
+            DocParagraphSettingCommand,
+            InnerPasteCommand,
+            CutContentCommand,
+            DocParagraphSettingPanelOperation,
+        ].forEach((e) => {
             this._commandService.registerCommand(e);
         });
+
+        [DocCopyCommand, DocCutCommand, DocPasteCommand].forEach((command) => this.disposeWithMe(this._commandService.registerMultipleCommand(command)));
     }
 
     private _initializeShortcut(): void {
@@ -118,8 +130,6 @@ export class UniverDocsUIPlugin extends Plugin {
             DeleteRightShortcut,
             BreakLineShortcut,
             ShiftTabShortCut,
-            // TabShortcut,
-            // ShiftTabShortcut,
         ].forEach((shortcut) => {
             this._injector.get(IShortcutService).registerShortcut(shortcut);
         });
@@ -128,7 +138,6 @@ export class UniverDocsUIPlugin extends Plugin {
     private _initDependencies(injector: Injector) {
         const dependencies: Dependency[] = [
             [DocUIController, { useFactory: () => this._injector.createInstance(DocUIController, this._config) }],
-            [DocClipboardController],
             [DocEditorBridgeController],
             [DocAutoFormatController],
 
@@ -168,6 +177,7 @@ export class UniverDocsUIPlugin extends Plugin {
     private _initRenderBasics(): void {
         ([
             [DocSkeletonManagerService],
+            [DocSelectionRenderService],
             [DocInterceptorService],
             [DocPageLayoutService],
             [DocRenderController],
@@ -186,6 +196,9 @@ export class UniverDocsUIPlugin extends Plugin {
             [DocResizeRenderController],
             [DocContextMenuRenderController],
             [DocChecklistRenderController],
+            [DocClipboardController],
+            [DocIMEInputController],
+            [DocIMEInputManagerService],
         ] as Dependency[]).forEach((m) => {
             this._renderManagerSrv.registerRenderModule(UniverInstanceType.UNIVER_DOC, m);
         });

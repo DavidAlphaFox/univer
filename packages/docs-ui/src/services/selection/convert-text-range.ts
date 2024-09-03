@@ -15,23 +15,8 @@
  */
 
 import type { IPosition, ITextRange, Nullable } from '@univerjs/core';
-
-import type {
-    IDocumentSkeletonCached,
-    IDocumentSkeletonColumn,
-    IDocumentSkeletonDivide,
-    IDocumentSkeletonGlyph,
-    IDocumentSkeletonLine,
-    IDocumentSkeletonPage,
-    IDocumentSkeletonRow,
-    IDocumentSkeletonSection,
-} from '../../../basics/i-document-skeleton-cached';
-import { DocumentSkeletonPageType, GlyphType } from '../../../basics/i-document-skeleton-cached';
-import type { INodePosition } from '../../../basics/interfaces';
-import type { IPoint } from '../../../basics/vector2';
-import type { DocumentSkeleton } from '../layout/doc-skeleton';
-import type { IDocumentOffsetConfig } from '../document';
-import { Liquid } from '../liquid';
+import type { DocumentSkeleton, IDocumentOffsetConfig, IDocumentSkeletonCached, IDocumentSkeletonColumn, IDocumentSkeletonDivide, IDocumentSkeletonGlyph, IDocumentSkeletonLine, IDocumentSkeletonPage, IDocumentSkeletonRow, IDocumentSkeletonSection, INodePosition, IPoint } from '@univerjs/engine-render';
+import { DocumentSkeletonPageType, GlyphType, Liquid } from '@univerjs/engine-render';
 
 export enum NodePositionStateType {
     NORMAL,
@@ -265,6 +250,7 @@ export class NodePositionConvertToCursor {
         // super
     }
 
+    // eslint-disable-next-line max-lines-per-function
     getRangePointData(startOrigin: Nullable<INodePosition>, endOrigin: Nullable<INodePosition>) {
         const borderBoxPointGroup: IPoint[][] = [];
         const contentBoxPointGroup: IPoint[][] = [];
@@ -289,6 +275,7 @@ export class NodePositionConvertToCursor {
 
         const { start, end } = compareNodePosition(startOrigin, endOrigin);
 
+        // eslint-disable-next-line complexity
         this._selectionIterator(start, end, (start_sp, end_sp, isFirst, isLast, divide, line) => {
             const { lineHeight, asc, paddingTop, marginTop, marginBottom } = line;
             const { glyphGroup, st } = divide;
@@ -494,6 +481,7 @@ export class NodePositionConvertToCursor {
         };
     }
 
+    // eslint-disable-next-line max-lines-per-function, complexity
     private _selectionIterator(
         startPosition: INodePosition,
         endPosition: INodePosition,

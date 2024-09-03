@@ -18,7 +18,7 @@ import type { DocumentDataModel, ICommand, IDocumentBody, IMutationInfo, ITextRa
 import { CommandType, ICommandService, IUndoRedoService, IUniverInstanceService, JSONX, TextX, TextXActionType } from '@univerjs/core';
 import type { ITextRangeWithStyle } from '@univerjs/engine-render';
 
-import { TextSelectionManagerService } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../services/text-selection-manager.service';
 import type { IRichTextEditingMutationParams } from '../mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../mutations/core-editing.mutation';
 import { getRichTextEditPath } from '../util';
@@ -42,7 +42,7 @@ export const ReplaceContentCommand: ICommand<IReplaceContentCommandParams> = {
         const { unitId, body, textRanges, segmentId = '', options } = params;
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
 
         const docDataModel = univerInstanceService.getUniverDocInstance(unitId);
         const prevBody = docDataModel?.getSnapshot().body;
@@ -170,7 +170,7 @@ export const ReplaceSelectionCommand: ICommand<IReplaceSelectionCommandParams> =
         const { unitId, body: insertBody, textRanges } = params;
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const docDataModel = univerInstanceService.getUnit<DocumentDataModel>(unitId);
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
         if (!docDataModel) {
             return false;
         }
