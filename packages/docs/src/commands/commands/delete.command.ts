@@ -28,11 +28,10 @@ import {
     TextXActionType,
     UpdateDocsAttributeType,
 } from '@univerjs/core';
-import type { IActiveTextRange, ITextRangeWithStyle, RectRange, TextRange } from '@univerjs/engine-render';
+import type { ITextRangeWithStyle } from '@univerjs/engine-render';
 import { getParagraphByGlyph, hasListGlyph, isFirstGlyph, isIndentByGlyph } from '@univerjs/engine-render';
 
-import type { ITextActiveRange } from '../../services/text-selection-manager.service';
-import { DocSelectionManagerService } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../services/doc-selection-manager.service';
 import type { IRichTextEditingMutationParams } from '../mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../mutations/core-editing.mutation';
 import { getDeleteSelection } from '../../basics/selection';
@@ -44,7 +43,7 @@ import { DeleteCommand, UpdateCommand } from './core-editing.command';
 
 export interface IDeleteCustomBlockParams {
     direction: DeleteDirection;
-    range: IActiveTextRange;
+    range: ITextRangeWithStyle;
     unitId: string;
     drawingId: string;
 }
@@ -54,11 +53,11 @@ export const DeleteCustomBlockCommand: ICommand<IDeleteCustomBlockParams> = {
     id: 'doc.command.delete-custom-block',
     type: CommandType.COMMAND,
     handler: async (accessor, params: IDeleteCustomBlockParams) => {
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
 
-        const activeRange = textSelectionManagerService.getActiveTextRangeWithStyle();
+        const activeRange = docSelectionManagerService.getActiveTextRange();
         const documentDataModel = univerInstanceService.getCurrentUniverDocInstance();
 
         if (activeRange == null || documentDataModel == null) {
@@ -136,7 +135,7 @@ export const DeleteCustomBlockCommand: ICommand<IDeleteCustomBlockParams> = {
 
 interface IMergeTwoParagraphParams {
     direction: DeleteDirection;
-    range: IActiveTextRange;
+    range: ITextRangeWithStyle;
 }
 
 export const MergeTwoParagraphCommand: ICommand<IMergeTwoParagraphParams> = {
@@ -145,14 +144,14 @@ export const MergeTwoParagraphCommand: ICommand<IMergeTwoParagraphParams> = {
     type: CommandType.COMMAND,
     // eslint-disable-next-line max-lines-per-function
     handler: async (accessor, params: IMergeTwoParagraphParams) => {
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
 
         const { direction, range } = params;
 
-        const activeRange = textSelectionManagerService.getActiveTextRangeWithStyle();
-        const ranges = textSelectionManagerService.getCurrentTextRanges();
+        const activeRange = docSelectionManagerService.getActiveTextRange();
+        const ranges = docSelectionManagerService.getCurrentTextRanges();
 
         if (activeRange == null || ranges == null) {
             return false;
@@ -240,7 +239,7 @@ export const MergeTwoParagraphCommand: ICommand<IMergeTwoParagraphParams> = {
     },
 };
 
-export function getCursorWhenDelete(textRanges: Readonly<Nullable<TextRange[]>>, rectRanges: readonly RectRange[]): number {
+export function getCursorWhenDelete(textRanges: Readonly<Nullable<ITextRangeWithStyle[]>>, rectRanges: readonly ITextRangeWithStyle[]): number {
     let cursor = 0;
 
     if (textRanges == null || textRanges.length === 0) {
@@ -294,7 +293,7 @@ export const DeleteLeftCommand: ICommand = {
     type: CommandType.COMMAND,
     // eslint-disable-next-line max-lines-per-function, complexity
     handler: async (accessor) => {
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
 
@@ -307,9 +306,9 @@ export const DeleteLeftCommand: ICommand = {
 
         const unitId = docDataModel.getUnitId();
         const docSkeletonManagerService = getCommandSkeleton(accessor, unitId);
-        const activeRange = textSelectionManagerService.getActiveTextRangeWithStyle();
-        const rectRanges = textSelectionManagerService.getCurrentRectRanges();
-        const ranges = textSelectionManagerService.getCurrentTextRanges();
+        const activeRange = docSelectionManagerService.getActiveTextRange();
+        const rectRanges = docSelectionManagerService.getCurrentRectRanges();
+        const ranges = docSelectionManagerService.getCurrentTextRanges();
         const skeleton = docSkeletonManagerService?.getSkeleton();
 
         if (skeleton == null) {
@@ -512,7 +511,7 @@ export const DeleteRightCommand: ICommand = {
 
     // eslint-disable-next-line max-lines-per-function, complexity
     handler: async (accessor) => {
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const docDataModel = univerInstanceService.getCurrentUniverDocInstance();
         if (!docDataModel) {
@@ -522,9 +521,9 @@ export const DeleteRightCommand: ICommand = {
         const docSkeletonManagerService = getCommandSkeleton(accessor, docDataModel.getUnitId());
         const commandService = accessor.get(ICommandService);
 
-        const activeRange = textSelectionManagerService.getActiveTextRangeWithStyle();
-        const rectRanges = textSelectionManagerService.getCurrentRectRanges();
-        const ranges = textSelectionManagerService.getCurrentTextRanges();
+        const activeRange = docSelectionManagerService.getActiveTextRange();
+        const rectRanges = docSelectionManagerService.getCurrentRectRanges();
+        const ranges = docSelectionManagerService.getCurrentTextRanges();
         const skeleton = docSkeletonManagerService?.getSkeleton();
 
         if (rectRanges?.length) {
@@ -721,7 +720,7 @@ function getParagraphBody(
 }
 
 // get cursor position when BACKSPACE/DELETE excuse the CutContentCommand.
-function getTextRangesWhenDelete(activeRange: ITextActiveRange, ranges: readonly ITextRange[]) {
+function getTextRangesWhenDelete(activeRange: ITextRangeWithStyle, ranges: readonly ITextRange[]) {
     let cursor = activeRange.endOffset;
 
     for (const range of ranges) {

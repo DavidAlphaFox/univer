@@ -14,44 +14,21 @@
  * limitations under the License.
  */
 
-import type { Documents, DocumentSkeleton, Engine, IFindNodeRestrictions, IMouseEvent, INodeInfo, INodePosition, IPointerEvent, IRenderContext, IRenderModule, IScrollObserverParam, ISuccinctDocRangeParam, ITextRangeWithStyle, ITextSelectionStyle, RANGE_DIRECTION, Scene, Viewport } from '@univerjs/engine-render';
+import type { Documents, DocumentSkeleton, Engine, IFindNodeRestrictions, IMouseEvent, INodeInfo, INodePosition, IPointerEvent, IRenderContext, IRenderModule, IScrollObserverParam, ISuccinctDocRangeParam, ITextRangeWithStyle, ITextSelectionInnerParam, ITextSelectionStyle, Scene, Viewport } from '@univerjs/engine-render';
 import { CURSOR_TYPE, getSystemHighlightColor, NORMAL_TEXT_SELECTION_PLUGIN_STYLE, PageLayoutType, ScrollTimer, Vector2 } from '@univerjs/engine-render';
 import type { DocumentDataModel, Nullable } from '@univerjs/core';
-import { DataStreamTreeTokenType, ILogService, RxDisposable } from '@univerjs/core';
+import { DataStreamTreeTokenType, DOC_RANGE_TYPE, ILogService, RxDisposable } from '@univerjs/core';
 import type { Subscription } from 'rxjs';
 import { BehaviorSubject, fromEvent, Subject } from 'rxjs';
 import type { RectRange } from './rect-range';
-import { getCanvasOffsetByEngine, getParagraphInfoByGlyph, getRangeListFromCharIndex, getRangeListFromSelection, getRectRangeFromCharIndex, getTextRangeFromCharIndex } from './selection-utils';
-import { DOC_RANGE_TYPE } from './range-interface';
+import { getCanvasOffsetByEngine, getParagraphInfoByGlyph, getRangeListFromCharIndex, getRangeListFromSelection, getRectRangeFromCharIndex, getTextRangeFromCharIndex, serializeDocRange } from './selection-utils';
 import { TextRange } from './text-range';
-
-export interface ITextSelectionInnerParam {
-    textRanges: TextRange[];
-    rectRanges: RectRange[];
-    segmentId: string;
-    isEditing: boolean;
-    style: ITextSelectionStyle;
-    segmentPage: number;
-    options?: { [key: string]: boolean };
-}
-
-export interface IActiveTextRange {
-    startOffset: number;
-    endOffset: number;
-    collapsed: boolean;
-    startNodePosition: Nullable<INodePosition>;
-    endNodePosition: Nullable<INodePosition>;
-    direction: RANGE_DIRECTION;
-    segmentId: string;
-    segmentPage: number;
-    style: ITextSelectionStyle;
-}
 
 export interface IEditorInputConfig {
     event: Event | CompositionEvent | KeyboardEvent;
     content?: string;
     activeRange?: Nullable<ITextRangeWithStyle>;
-    rangeList?: TextRange[];
+    rangeList?: ITextRangeWithStyle[];
 }
 
 export class DocSelectionRenderService extends RxDisposable implements IRenderModule {
@@ -413,11 +390,10 @@ export class DocSelectionRenderService extends RxDisposable implements IRenderMo
 
         const { st, ed } = paragraphInfo;
 
-        const textRanges: ITextRangeWithStyle[] = [
+        const textRanges: ISuccinctDocRangeParam[] = [
             {
                 startOffset: st,
                 endOffset: ed,
-                collapsed: st === ed,
             },
         ];
 
@@ -577,37 +553,27 @@ export class DocSelectionRenderService extends RxDisposable implements IRenderMo
     }
 
     private _getAllTextRanges() {
-        return this._rangeList;
+        return this._rangeList.map(serializeDocRange);
     }
 
     private _getAllRectRanges() {
-        return this._rectRangeList;
+        return this._rectRangeList.map(serializeDocRange);
     }
 
-    private _getActiveRange(): Nullable<IActiveTextRange> {
+    private _getActiveRange(): Nullable<ITextRangeWithStyle> {
         const activeRange = this._rangeList.find((range) => range.isActive());
 
         if (activeRange == null) {
             return null;
         }
 
-        const { startOffset, endOffset, collapsed, startNodePosition, endNodePosition, direction } = activeRange;
+        const { startOffset, endOffset } = activeRange;
 
         if (startOffset == null || endOffset == null) {
             return null;
         }
 
-        return {
-            startOffset,
-            endOffset,
-            collapsed,
-            startNodePosition,
-            endNodePosition,
-            direction,
-            segmentId: this._currentSegmentId,
-            segmentPage: this._currentSegmentPage,
-            style: this._selectionStyle,
-        };
+        return serializeDocRange(activeRange);
     }
 
     private _getActiveRangeInstance() {
@@ -623,10 +589,13 @@ export class DocSelectionRenderService extends RxDisposable implements IRenderMo
     }
 
     private _initDOM() {
+        const { unitId } = this._context;
         const container = document.createElement('div');
         container.style.position = 'fixed';
         container.style.left = '0px';
         container.style.top = '0px';
+
+        container.id = `univer-doc-selection-container-${unitId}`;
 
         const inputParent = document.createElement('div');
         const inputDom = document.createElement('div');

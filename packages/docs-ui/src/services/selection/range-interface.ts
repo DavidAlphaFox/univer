@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import type { Nullable } from '@univerjs/core';
-import type { INodePosition, ITextSelectionStyle, RANGE_DIRECTION } from '@univerjs/engine-render';
-
-export enum DOC_RANGE_TYPE {
-    RECT = 'RECT',
-    TEXT = 'TEXT',
-}
+import type { DOC_RANGE_TYPE, Nullable, RANGE_DIRECTION } from '@univerjs/core';
+import type { INodePosition, ITextSelectionStyle } from '@univerjs/engine-render';
 
 export interface IDocRange {
     // RECT OR TEXT.
@@ -40,7 +35,7 @@ export interface IDocRange {
     get startNodePosition(): Nullable<INodePosition>;
     get endNodePosition(): Nullable<INodePosition>;
     get direction(): RANGE_DIRECTION;
-
+    // Whether the range is active.
     isActive(): boolean;
 
     dispose(): void;

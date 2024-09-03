@@ -23,8 +23,8 @@ import {
     JSONX, MemoryCursor,
     TextX, TextXActionType,
 } from '@univerjs/core';
-import type { IDocRange } from '@univerjs/engine-render';
-import { DocSelectionManagerService, serializeDocRange } from '../../services/text-selection-manager.service';
+import type { ITextRangeWithStyle } from '@univerjs/engine-render';
+import { DocSelectionManagerService } from '../../services/doc-selection-manager.service';
 import type { IRichTextEditingMutationParams } from '../mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../mutations/core-editing.mutation';
 import { getRichTextEditPath } from '../util';
@@ -232,10 +232,10 @@ export const SetInlineFormatCommand: ICommand<ISetInlineFormatCommandParams> = {
     handler: async (accessor, params: ISetInlineFormatCommandParams) => {
         const { value, preCommandId } = params;
         const commandService = accessor.get(ICommandService);
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
 
-        const docRanges = textSelectionManagerService.getDocRanges();
+        const docRanges = docSelectionManagerService.getDocRanges();
 
         if (docRanges.length === 0) {
             return false;
@@ -299,7 +299,7 @@ export const SetInlineFormatCommand: ICommand<ISetInlineFormatCommandParams> = {
             params: {
                 unitId,
                 actions: [],
-                textRanges: docRanges.map(serializeDocRange),
+                textRanges: docRanges,
             },
         };
 
@@ -375,7 +375,7 @@ function isTextDecoration(value: unknown | ITextDecoration): value is ITextDecor
 function getReverseFormatValueInSelection(
     textRuns: ITextRun[],
     preCommandId: string,
-    docRanges: IDocRange[]
+    docRanges: ITextRangeWithStyle[]
 ): BooleanNumber | ITextDecoration | BaselineOffset {
     let ti = 0;
     let si = 0;

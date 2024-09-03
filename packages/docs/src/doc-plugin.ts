@@ -48,7 +48,7 @@ import { SelectAllOperation } from './commands/operations/select-all.operation';
 import { SetDocZoomRatioOperation } from './commands/operations/set-doc-zoom-ratio.operation';
 import { SetTextSelectionsOperation } from './commands/operations/text-selection.operation';
 import { MoveCursorController } from './controllers/move-cursor.controller';
-import { DocSelectionManagerService } from './services/text-selection-manager.service';
+import { DocSelectionManagerService } from './services/doc-selection-manager.service';
 import { DocStateChangeManagerService } from './services/doc-state-change-manager.service';
 import { AlignCenterCommand, AlignJustifyCommand, AlignLeftCommand, AlignOperationCommand, AlignRightCommand } from './commands/commands/paragraph-align.command';
 import { DocCustomRangeService } from './services/doc-custom-range.service';

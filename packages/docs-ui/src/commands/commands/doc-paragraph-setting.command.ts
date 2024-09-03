@@ -17,20 +17,20 @@
 import type { DocumentDataModel, IAccessor, ICommand, IMutationInfo, IParagraphStyle } from '@univerjs/core';
 import { CommandType, ICommandService, IUniverInstanceService, JSONX, MemoryCursor, TextX, TextXActionType, UniverInstanceType, UpdateDocsAttributeType } from '@univerjs/core';
 import type { IRichTextEditingMutationParams } from '@univerjs/docs';
-import { getParagraphsInRanges, getRichTextEditPath, RichTextEditingMutation, serializeDocRange, TextSelectionManagerService } from '@univerjs/docs';
+import { DocSelectionManagerService, getParagraphsInRanges, getRichTextEditPath, RichTextEditingMutation, serializeDocRange } from '@univerjs/docs';
 
 export type IDocParagraphSettingCommandParams = Partial<Pick<IParagraphStyle, 'hanging' | 'horizontalAlign' | 'spaceBelow' | 'spaceAbove' | 'indentEnd' | 'indentStart' | 'lineSpacing' | 'indentFirstLine'>>;
 export const DocParagraphSettingCommand: ICommand<IDocParagraphSettingCommandParams> = {
     id: 'doc-paragraph-setting.command',
     type: CommandType.COMMAND,
     handler: async (accessor: IAccessor, config) => {
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
 
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
 
         const docDataModel = univerInstanceService.getCurrentUnitForType<DocumentDataModel>(UniverInstanceType.UNIVER_DOC);
-        const docRanges = textSelectionManagerService.getDocRanges();
+        const docRanges = docSelectionManagerService.getDocRanges();
 
         if (!docDataModel || docRanges.length === 0 || !config) {
             return false;

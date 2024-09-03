@@ -18,7 +18,7 @@ import type { DocumentDataModel, ICommand, IDocumentData, Injector, IStyleBase, 
 import { BooleanNumber, ICommandService, IUniverInstanceService, UndoCommand, UniverInstanceType } from '@univerjs/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { DocSelectionManagerService } from '../../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../../services/doc-selection-manager.service';
 import { RichTextEditingMutation } from '../../mutations/core-editing.mutation';
 import { SetTextSelectionsOperation } from '../../operations/text-selection.operation';
 import type { IInnerCutCommandParams, IInnerPasteCommandParams } from '../clipboard.inner.command';

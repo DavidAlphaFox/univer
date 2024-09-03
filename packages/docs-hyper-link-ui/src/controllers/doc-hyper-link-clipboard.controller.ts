@@ -16,7 +16,7 @@
 
 import type { DocumentDataModel } from '@univerjs/core';
 import { CustomRangeType, Disposable, ICommandService, Inject, IUniverInstanceService, LifecycleStages, OnLifecycle, Tools, UniverInstanceType, updateAttributeByDelete } from '@univerjs/core';
-import { TextSelectionManagerService } from '@univerjs/docs';
+import { DocSelectionManagerService } from '@univerjs/docs';
 import type { IAddDocHyperLinkMutationParams } from '@univerjs/docs-hyper-link';
 import { AddDocHyperLinkMutation, DocHyperLinkModel } from '@univerjs/docs-hyper-link';
 import { IDocClipboardService } from '@univerjs/docs-ui';
@@ -27,7 +27,7 @@ export class DocHyperLinkClipboardController extends Disposable {
         @Inject(IDocClipboardService) private readonly _docClipboardService: IDocClipboardService,
         @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService,
         @Inject(DocHyperLinkModel) private readonly _hyperLinkModel: DocHyperLinkModel,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService,
+        @Inject(DocSelectionManagerService) private readonly _textSelectionManagerService: DocSelectionManagerService,
         @ICommandService private readonly _commandService: ICommandService
     ) {
         super();
@@ -42,7 +42,7 @@ export class DocHyperLinkClipboardController extends Disposable {
                 if (!doc) {
                     return body;
                 }
-                const activeRange = this._textSelectionManagerService.getActiveTextRangeWithStyle();
+                const activeRange = this._textSelectionManagerService.getActiveTextRange();
                 const customRanges = doc.getBody()?.customRanges;
 
                 const matchedRange = activeRange ?

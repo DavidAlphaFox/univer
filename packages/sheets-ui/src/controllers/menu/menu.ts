@@ -32,7 +32,7 @@ import {
     VerticalAlign,
     WrapStrategy,
 } from '@univerjs/core';
-import { SetInlineFormatCommand, SetTextSelectionsOperation, TextSelectionManagerService } from '@univerjs/docs';
+import { DocSelectionManagerService, SetInlineFormatCommand, SetTextSelectionsOperation } from '@univerjs/docs';
 import {
     RangeProtectionPermissionEditPoint,
     RangeProtectionPermissionViewPoint,
@@ -1311,10 +1311,10 @@ export function SetColWidthMenuItemFactory(accessor: IAccessor): IMenuButtonItem
 
 function getFontStyleAtCursor(accessor: IAccessor) {
     const univerInstanceService = accessor.get(IUniverInstanceService);
-    const textSelectionService = accessor.get(TextSelectionManagerService);
+    const textSelectionService = accessor.get(DocSelectionManagerService);
 
     const editorDataModel = univerInstanceService.getUniverDocInstance(DOCS_NORMAL_EDITOR_UNIT_ID_KEY);
-    const activeTextRange = textSelectionService.getActiveTextRangeWithStyle();
+    const activeTextRange = textSelectionService.getActiveTextRange();
 
     if (editorDataModel == null || activeTextRange == null) return null;
 

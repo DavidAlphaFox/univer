@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { COLORS, type Nullable, Rectangle, Tools } from '@univerjs/core';
+import { COLORS, DOC_RANGE_TYPE, type Nullable, RANGE_DIRECTION, Rectangle, Tools } from '@univerjs/core';
 import type { Documents, DocumentSkeleton, INodePosition, IPoint, ITextSelectionStyle, ThinScene } from '@univerjs/engine-render';
-import { getColor, NORMAL_TEXT_SELECTION_PLUGIN_STYLE, RANGE_DIRECTION, RegularPolygon } from '@univerjs/engine-render';
+import { getColor, NORMAL_TEXT_SELECTION_PLUGIN_STYLE, RegularPolygon } from '@univerjs/engine-render';
 import type { IDocRange } from './range-interface';
-import { DOC_RANGE_TYPE } from './range-interface';
 import { compareNodePositionInTable, NodePositionConvertToRectRange } from './convert-rect-range';
 import { TEXT_RANGE_LAYER_INDEX } from './text-range';
 

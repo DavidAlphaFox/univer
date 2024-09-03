@@ -15,9 +15,9 @@
  */
 
 import type { ITextRange, Nullable } from '@univerjs/core';
-import { BooleanNumber, COLORS, Tools } from '@univerjs/core';
+import { BooleanNumber, COLORS, DOC_RANGE_TYPE, RANGE_DIRECTION, Tools } from '@univerjs/core';
 import type { Documents, DocumentSkeleton, IDocumentSkeletonGlyph, INodePosition, IPoint, ISuccinctDocRangeParam, ITextSelectionStyle, Scene, ThinScene } from '@univerjs/engine-render';
-import { getColor, NORMAL_TEXT_SELECTION_PLUGIN_STYLE, RANGE_DIRECTION, Rect, RegularPolygon } from '@univerjs/engine-render';
+import { getColor, NORMAL_TEXT_SELECTION_PLUGIN_STYLE, Rect, RegularPolygon } from '@univerjs/engine-render';
 import {
     compareNodePosition,
     compareNodePositionLogic,
@@ -26,7 +26,6 @@ import {
     NodePositionMap,
 } from './convert-text-range';
 import type { IDocRange } from './range-interface';
-import { DOC_RANGE_TYPE } from './range-interface';
 
 const TEXT_RANGE_KEY_PREFIX = '__TestSelectionRange__';
 const TEXT_ANCHOR_KEY_PREFIX = '__TestSelectionAnchor__';

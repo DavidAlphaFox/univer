@@ -17,7 +17,7 @@
 import { Disposable, ICommandService, Inject, Injector, IUniverInstanceService, LifecycleStages, OnLifecycle, UniverInstanceType } from '@univerjs/core';
 import { IEditorService } from '@univerjs/ui';
 import type { IInsertCommandParams } from '@univerjs/docs';
-import { InsertCommand, TextSelectionManagerService } from '@univerjs/docs';
+import { DocSelectionManagerService, InsertCommand } from '@univerjs/docs';
 import { ISlideEditorBridgeService } from '@univerjs/slides-ui';
 import { AddSlideUniFormulaCommand } from '../commands/commands/slide.command';
 import { UNI_FORMULA_EDITOR_ID } from '../views/components/DocFormulaPopup';
@@ -34,7 +34,7 @@ export class SlideUniFormulaInputController extends Disposable {
         @IUniverInstanceService private readonly _instanceSrv: IUniverInstanceService,
         @ICommandService private readonly _commandSrv: ICommandService,
         @IEditorService private readonly _editorSrv: IEditorService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService,
+        @Inject(DocSelectionManagerService) private readonly _textSelectionManagerService: DocSelectionManagerService,
         @Inject(UniFormulaPopupService) private readonly _formulaPopupSrv: UniFormulaPopupService
     ) {
         super();

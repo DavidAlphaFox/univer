@@ -48,11 +48,11 @@ import {
     VIEWPORT_KEY as DOC_VIEWPORT_KEY,
     DOCS_COMPONENT_MAIN_LAYER_INDEX,
     DOCS_VIEW_KEY,
+    DocSelectionManagerService,
     DocSkeletonManagerService,
     MoveCursorOperation,
     MoveSelectionOperation,
     RichTextEditingMutation,
-    TextSelectionManagerService,
 } from '@univerjs/docs';
 import type {
     DocBackground,
@@ -117,7 +117,7 @@ export class SlideEditingRenderController extends Disposable implements IRenderM
         @ITextSelectionRenderManager private readonly _textSelectionRenderManager: ITextSelectionRenderManager,
         // @Inject(LexerTreeBuilder) private readonly _lexerTreeBuilder: LexerTreeBuilder,
         // @IFunctionService private readonly _functionService: IFunctionService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService,
+        @Inject(DocSelectionManagerService) private readonly _textSelectionManagerService: DocSelectionManagerService,
         @ICommandService private readonly _commandService: ICommandService,
         @Inject(LocaleService) protected readonly _localService: LocaleService,
         @IEditorService private readonly _editorService: IEditorService

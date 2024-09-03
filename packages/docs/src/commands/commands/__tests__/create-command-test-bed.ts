@@ -34,7 +34,7 @@ import type { DocumentSkeleton, IRender, IRenderContext, IRenderModule } from '@
 import { DocumentViewModel, IRenderManagerService } from '@univerjs/engine-render';
 
 import { BehaviorSubject, takeUntil } from 'rxjs';
-import { DocSelectionManagerService } from '../../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../../services/doc-selection-manager.service';
 import { DocStateChangeManagerService } from '../../../services/doc-state-change-manager.service';
 import { IMEInputManagerService } from '../../../../../docs-ui/src/services/ime-input-manager.service';
 import { DocSkeletonManagerService } from '../../../services/doc-skeleton-manager.service';

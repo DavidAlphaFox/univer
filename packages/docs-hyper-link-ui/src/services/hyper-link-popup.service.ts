@@ -16,7 +16,7 @@
 
 import type { DocumentDataModel, IDisposable, ITextRangeParam, Nullable } from '@univerjs/core';
 import { Disposable, Inject, IUniverInstanceService, UniverInstanceType } from '@univerjs/core';
-import { TextSelectionManagerService } from '@univerjs/docs';
+import { DocSelectionManagerService } from '@univerjs/docs';
 import { DocCanvasPopManagerService } from '@univerjs/docs-ui';
 import { BehaviorSubject } from 'rxjs';
 import { DocHyperLinkModel } from '@univerjs/docs-hyper-link';
@@ -46,7 +46,7 @@ export class DocHyperLinkPopupService extends Disposable {
 
     constructor(
         @Inject(DocCanvasPopManagerService) private readonly _docCanvasPopupManagerService: DocCanvasPopManagerService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService,
+        @Inject(DocSelectionManagerService) private readonly _textSelectionManagerService: DocSelectionManagerService,
         @Inject(DocHyperLinkModel) private readonly _docHyperLinkModel: DocHyperLinkModel,
         @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService
     ) {
@@ -71,7 +71,7 @@ export class DocHyperLinkPopupService extends Disposable {
             this._editPopup.dispose();
         }
         this._editingLink$.next(linkInfo);
-        let activeRange: Nullable<ITextRangeParam> = this._textSelectionManagerService.getActiveTextRangeWithStyle();
+        let activeRange: Nullable<ITextRangeParam> = this._textSelectionManagerService.getActiveTextRange();
         if (linkInfo) {
             const { unitId, linkId, segmentId, segmentPage } = linkInfo;
             const doc = this._univerInstanceService.getUnit<DocumentDataModel>(unitId, UniverInstanceType.UNIVER_DOC);

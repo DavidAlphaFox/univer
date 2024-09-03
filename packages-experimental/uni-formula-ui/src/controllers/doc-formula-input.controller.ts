@@ -16,7 +16,7 @@
 
 import { CustomRangeType, Disposable, ICommandService, ILogService, Inject, IUniverInstanceService, LifecycleStages, OnLifecycle, UniverInstanceType } from '@univerjs/core';
 import type { IInsertCommandParams } from '@univerjs/docs';
-import { DeleteLeftCommand, InsertCommand, MoveCursorOperation, TextSelectionManagerService } from '@univerjs/docs';
+import { DeleteLeftCommand, DocSelectionManagerService, InsertCommand, MoveCursorOperation } from '@univerjs/docs';
 import { IEditorService } from '@univerjs/ui';
 import { DocEventManagerService } from '@univerjs/docs-ui';
 
@@ -37,7 +37,7 @@ export class DocUniFormulaInputController extends Disposable {
         @ILogService private readonly _logService: ILogService,
         @Inject(DocEventManagerService) private readonly _docEventManagerService: DocEventManagerService,
         @Inject(UniFormulaPopupService) private readonly _formulaPopupSrv: UniFormulaPopupService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService
+        @Inject(DocSelectionManagerService) private readonly _textSelectionManagerService: DocSelectionManagerService
     ) {
         super();
 

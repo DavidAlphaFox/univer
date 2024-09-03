@@ -16,8 +16,7 @@
 
 import type { IParagraph, ISectionBreak, ITable, ITableCell, ITableColumn, ITableRow, Nullable } from '@univerjs/core';
 import { DataStreamTreeTokenType, generateRandomId, ObjectRelativeFromH, ObjectRelativeFromV, TableAlignmentType, TableCellHeightRule, TableSizeType, TableTextWrapType, Tools } from '@univerjs/core';
-import type { DataStreamTreeNode, DocumentViewModel, RectRange, TextRange } from '@univerjs/engine-render';
-import type { ITextActiveRange } from '../../../services/text-selection-manager.service';
+import type { DataStreamTreeNode, DocumentViewModel, ITextRangeWithStyle } from '@univerjs/engine-render';
 
 export enum INSERT_ROW_POSITION {
     ABOVE,
@@ -173,7 +172,7 @@ interface IRangeInfo {
     segmentId: string;
 }
 
-export function getRangeInfoFromRanges(textRange: Nullable<TextRange>, rectRanges: Readonly<Nullable<RectRange[]>>): Nullable<IRangeInfo> {
+export function getRangeInfoFromRanges(textRange: Nullable<ITextRangeWithStyle>, rectRanges: Readonly<Nullable<ITextRangeWithStyle[]>>): Nullable<IRangeInfo> {
     if (!textRange && !rectRanges) {
         return null;
     }
@@ -702,7 +701,7 @@ export enum CellPosition {
 }
 
 // eslint-disable-next-line complexity, max-lines-per-function
-export function getCellOffsets(viewModel: DocumentViewModel, range: ITextActiveRange, position: CellPosition): Nullable<IOffsets> {
+export function getCellOffsets(viewModel: DocumentViewModel, range: ITextRangeWithStyle, position: CellPosition): Nullable<IOffsets> {
     const { startOffset } = range;
 
     let targetTable = null;

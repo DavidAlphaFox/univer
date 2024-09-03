@@ -18,7 +18,7 @@ import type { CustomRangeType, DocumentDataModel, IAccessor, IDocumentBody, IMut
 import { DataStreamTreeTokenType, IUniverInstanceService, JSONX, TextX, TextXActionType, UniverInstanceType } from '@univerjs/core';
 import type { IRichTextEditingMutationParams } from '../commands/mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../commands/mutations/core-editing.mutation';
-import { DocSelectionManagerService } from '../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../services/doc-selection-manager.service';
 import { getRichTextEditPath } from '../commands/util';
 import { getSelectionForAddCustomRange, normalizeSelection } from './selection';
 
@@ -114,10 +114,10 @@ interface IAddCustomRangeFactoryParam {
 // eslint-disable-next-line max-lines-per-function
 export function addCustomRangeBySelectionFactory(accessor: IAccessor, param: IAddCustomRangeFactoryParam) {
     const { rangeId, rangeType, wholeEntity } = param;
-    const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+    const docSelectionManagerService = accessor.get(DocSelectionManagerService);
     const univerInstanceService = accessor.get(IUniverInstanceService);
 
-    const selection = textSelectionManagerService.getActiveTextRangeWithStyle();
+    const selection = docSelectionManagerService.getActiveTextRange();
     const segmentId = selection?.segmentId;
     if (!selection) {
         return false;

@@ -26,7 +26,7 @@ import {
     UpdateDocsAttributeType,
 } from '@univerjs/core';
 
-import { DocSelectionManagerService, serializeDocRange } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../services/doc-selection-manager.service';
 import type { IRichTextEditingMutationParams } from '../mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../mutations/core-editing.mutation';
 import { getRichTextEditPath } from '../util';
@@ -43,7 +43,7 @@ export const AlignOperationCommand: ICommand<IAlignOperationCommandParams> = {
 
     // eslint-disable-next-line max-lines-per-function
     handler: (accessor, params: IAlignOperationCommandParams) => {
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
 
@@ -54,7 +54,7 @@ export const AlignOperationCommand: ICommand<IAlignOperationCommandParams> = {
             return false;
         }
 
-        const allRanges = textSelectionManagerService.getDocRanges();
+        const allRanges = docSelectionManagerService.getDocRanges();
         if (allRanges.length === 0) {
             return false;
         }
@@ -62,7 +62,6 @@ export const AlignOperationCommand: ICommand<IAlignOperationCommandParams> = {
         const segmentId = allRanges[0].segmentId;
 
         const paragraphs = docDataModel.getSelfOrHeaderFooterModel(segmentId).getBody()?.paragraphs;
-        const serializedSelections = allRanges.map(serializeDocRange);
 
         if (paragraphs == null) {
             return false;
@@ -78,7 +77,7 @@ export const AlignOperationCommand: ICommand<IAlignOperationCommandParams> = {
             params: {
                 unitId,
                 actions: [],
-                textRanges: serializedSelections,
+                textRanges: allRanges,
             },
         };
 

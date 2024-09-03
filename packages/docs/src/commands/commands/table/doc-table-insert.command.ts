@@ -16,9 +16,11 @@
 
 import type { ICommand, IMutationInfo, JSONXActions } from '@univerjs/core';
 import { CommandType, ICommandService, IUniverInstanceService, JSONX, TextX, TextXActionType } from '@univerjs/core';
-import type { IRichTextEditingMutationParams } from '@univerjs/docs';
-import { getCommandSkeleton, getRichTextEditPath, RichTextEditingMutation, TextSelectionManagerService } from '@univerjs/docs';
 import type { ITextRangeWithStyle } from '@univerjs/engine-render';
+import { DocSelectionManagerService } from '../../../services/doc-selection-manager.service';
+import type { IRichTextEditingMutationParams } from '../../mutations/core-editing.mutation';
+import { RichTextEditingMutation } from '../../mutations/core-editing.mutation';
+import { getCommandSkeleton, getRichTextEditPath } from '../../util';
 import { getColumnWidths, getEmptyTableCell, getEmptyTableRow, getInsertColumnActionsParams, getInsertColumnBody, getInsertRowActionsParams, getInsertRowBody, getRangeInfoFromRanges, getTableColumn, INSERT_COLUMN_POSITION, INSERT_ROW_POSITION } from './table';
 
 // Insert rows and columns are in this file.
@@ -96,12 +98,12 @@ export const DocTableInsertRowCommand: ICommand<IDocTableInsertRowCommandParams>
     // eslint-disable-next-line max-lines-per-function
     handler: async (accessor, params: IDocTableInsertRowCommandParams) => {
         const { position } = params;
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
 
-        const activeRectRanges = textSelectionManagerService.getCurrentRectRanges();
-        const activeTextRange = textSelectionManagerService.getActiveTextRange();
+        const activeRectRanges = docSelectionManagerService.getCurrentRectRanges();
+        const activeTextRange = docSelectionManagerService.getActiveTextRange();
 
         const rangeInfo = getRangeInfoFromRanges(activeTextRange, activeRectRanges);
 
@@ -207,12 +209,12 @@ export const DocTableInsertColumnCommand: ICommand<IDocTableInsertColumnCommandP
     // eslint-disable-next-line max-lines-per-function
     handler: async (accessor, params: IDocTableInsertColumnCommandParams) => {
         const { position } = params;
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
 
-        const activeRectRanges = textSelectionManagerService.getCurrentRectRanges();
-        const activeTextRange = textSelectionManagerService.getActiveTextRange();
+        const activeRectRanges = docSelectionManagerService.getCurrentRectRanges();
+        const activeTextRange = docSelectionManagerService.getActiveTextRange();
 
         const rangeInfo = getRangeInfoFromRanges(activeTextRange, activeRectRanges);
 

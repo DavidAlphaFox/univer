@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-    Dependency } from '@univerjs/core';
+import type { Dependency } from '@univerjs/core';
 import {
     ICommandService,
     ILogService,

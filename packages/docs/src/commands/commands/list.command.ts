@@ -30,10 +30,10 @@ import {
     Tools,
     UpdateDocsAttributeType,
 } from '@univerjs/core';
-import type { IActiveTextRange, IDocRange } from '@univerjs/engine-render';
+import type { ITextRangeWithStyle } from '@univerjs/engine-render';
 import { getCharSpaceApply, getNumberUnitValue } from '@univerjs/engine-render';
 
-import { DocSelectionManagerService, serializeDocRange } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../services/doc-selection-manager.service';
 import type { IRichTextEditingMutationParams } from '../mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../mutations/core-editing.mutation';
 import { getRichTextEditPath } from '../util';
@@ -48,14 +48,14 @@ export const ListOperationCommand: ICommand<IListOperationCommandParams> = {
     type: CommandType.COMMAND,
     // eslint-disable-next-line max-lines-per-function, complexity
     handler: (accessor, params: IListOperationCommandParams) => {
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
 
         let listType: string = params.listType;
 
         const docDataModel = univerInstanceService.getCurrentUniverDocInstance();
-        const docRanges = textSelectionManagerService.getDocRanges() ?? [];
+        const docRanges = docSelectionManagerService.getDocRanges() ?? [];
 
         if (docDataModel == null || docRanges.length === 0) {
             return false;
@@ -64,7 +64,6 @@ export const ListOperationCommand: ICommand<IListOperationCommandParams> = {
         const segmentId = docRanges[0].segmentId;
 
         const paragraphs = docDataModel.getSelfOrHeaderFooterModel(segmentId).getBody()?.paragraphs;
-        const serializedSelections = docRanges.map(serializeDocRange);
 
         if (paragraphs == null) {
             return false;
@@ -105,7 +104,7 @@ export const ListOperationCommand: ICommand<IListOperationCommandParams> = {
             params: {
                 unitId,
                 actions: [],
-                textRanges: serializedSelections,
+                textRanges: docRanges,
             },
         };
 
@@ -201,20 +200,19 @@ export const ChangeListTypeCommand: ICommand<IChangeListTypeCommandParams> = {
     type: CommandType.COMMAND,
     // eslint-disable-next-line max-lines-per-function
     handler: (accessor, params: IChangeListTypeCommandParams) => {
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
         const { listType } = params;
         const docDataModel = univerInstanceService.getCurrentUniverDocInstance();
-        const activeRanges = textSelectionManagerService.getDocRanges();
+        const activeRanges = docSelectionManagerService.getDocRanges();
         if (docDataModel == null || activeRanges == null || !activeRanges.length) {
             return false;
         }
 
         const { segmentId } = activeRanges[0];
-        const selections = textSelectionManagerService.getDocRanges() ?? [];
+        const selections = docSelectionManagerService.getDocRanges() ?? [];
         const paragraphs = docDataModel.getSelfOrHeaderFooterModel(segmentId).getBody()?.paragraphs;
-        const serializedSelections = selections.map(serializeDocRange);
 
         if (paragraphs == null) {
             return false;
@@ -231,7 +229,7 @@ export const ChangeListTypeCommand: ICommand<IChangeListTypeCommandParams> = {
             params: {
                 unitId,
                 actions: [],
-                textRanges: serializedSelections,
+                textRanges: selections,
             },
         };
 
@@ -333,20 +331,19 @@ export const ChangeListNestingLevelCommand: ICommand<IChangeListNestingLevelComm
             return false;
         }
         const { type } = params;
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
         const docDataModel = univerInstanceService.getCurrentUniverDocInstance();
-        const activeRange = textSelectionManagerService.getActiveTextRangeWithStyle();
+        const activeRange = docSelectionManagerService.getActiveTextRange();
         if (docDataModel == null || activeRange == null) {
             return false;
         }
 
         const { segmentId } = activeRange;
         const tables = docDataModel.getBody()?.tables ?? [];
-        const selections = textSelectionManagerService.getDocRanges() ?? [];
+        const selections = docSelectionManagerService.getDocRanges() ?? [];
         const paragraphs = docDataModel.getSelfOrHeaderFooterModel(segmentId).getBody()?.paragraphs;
-        const serializedSelections = selections.map(serializeDocRange);
 
         if (paragraphs == null) {
             return false;
@@ -361,7 +358,7 @@ export const ChangeListNestingLevelCommand: ICommand<IChangeListNestingLevelComm
             params: {
                 unitId,
                 actions: [],
-                textRanges: serializedSelections,
+                textRanges: selections,
             },
         };
 
@@ -491,6 +488,7 @@ export const ToggleCheckListCommand: ICommand<IToggleCheckListCommandParams> = {
     id: 'doc.command.toggle-check-list',
     type: CommandType.COMMAND,
 
+    // eslint-disable-next-line max-lines-per-function
     handler: (accessor, params) => {
         if (!params) {
             return false;
@@ -611,11 +609,11 @@ export const QuickListCommand: ICommand<IQuickListCommandParams> = {
         if (!params) {
             return false;
         }
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
         const docDataModel = univerInstanceService.getCurrentUniverDocInstance();
-        const activeRange = textSelectionManagerService.getActiveTextRange();
+        const activeRange = docSelectionManagerService.getActiveTextRange();
         if (docDataModel == null || activeRange == null) {
             return false;
         }
@@ -718,7 +716,7 @@ export const QuickListCommand: ICommand<IQuickListCommandParams> = {
     },
 };
 
-export function getParagraphsInRange(activeRange: IActiveTextRange, paragraphs: IParagraph[]) {
+export function getParagraphsInRange(activeRange: ITextRangeWithStyle, paragraphs: IParagraph[]) {
     const { startOffset, endOffset } = activeRange;
     const results: IParagraph[] = [];
 
@@ -739,7 +737,7 @@ export function getParagraphsInRange(activeRange: IActiveTextRange, paragraphs: 
     return results;
 }
 
-export function getParagraphsRelative(ranges: IDocRange[], paragraphs: IParagraph[]) {
+export function getParagraphsRelative(ranges: ITextRangeWithStyle[], paragraphs: IParagraph[]) {
     const selectionParagraphs = getParagraphsInRanges(ranges, paragraphs);
     const startIndex = paragraphs.indexOf(selectionParagraphs[0]);
     const endIndex = paragraphs.indexOf(selectionParagraphs[selectionParagraphs.length - 1]);
@@ -765,11 +763,11 @@ export function getParagraphsRelative(ranges: IDocRange[], paragraphs: IParagrap
     return selectionParagraphs;
 }
 
-export function getParagraphsInRanges(ranges: IDocRange[], paragraphs: IParagraph[]) {
+export function getParagraphsInRanges(ranges: ITextRangeWithStyle[], paragraphs: IParagraph[]) {
     const results: IParagraph[] = [];
 
     for (const range of ranges) {
-        const ps = getParagraphsInRange(range as unknown as IActiveTextRange, paragraphs);
+        const ps = getParagraphsInRange(range, paragraphs);
 
         results.push(...ps);
     }

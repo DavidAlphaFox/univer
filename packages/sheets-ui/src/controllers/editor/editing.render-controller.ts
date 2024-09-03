@@ -46,11 +46,11 @@ import type { IRichTextEditingMutationParams } from '@univerjs/docs';
 import {
     VIEWPORT_KEY as DOC_VIEWPORT_KEY,
     DOCS_COMPONENT_MAIN_LAYER_INDEX,
+    DocSelectionManagerService,
     DocSkeletonManagerService,
     MoveCursorOperation,
     MoveSelectionOperation,
     RichTextEditingMutation,
-    TextSelectionManagerService,
 } from '@univerjs/docs';
 import type { DocumentSkeleton, IDocumentLayoutObject, IEditorInputConfig, IRenderContext, IRenderModule, Scene } from '@univerjs/engine-render';
 import {
@@ -123,7 +123,7 @@ export class EditingRenderController extends Disposable implements IRenderModule
         @ITextSelectionRenderManager private readonly _textSelectionRenderManager: ITextSelectionRenderManager,
         @Inject(LexerTreeBuilder) private readonly _lexerTreeBuilder: LexerTreeBuilder,
         @IFunctionService private readonly _functionService: IFunctionService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService,
+        @Inject(DocSelectionManagerService) private readonly _textSelectionManagerService: DocSelectionManagerService,
         @ICommandService private readonly _commandService: ICommandService,
         @Inject(LocaleService) protected readonly _localService: LocaleService,
         @IEditorService private readonly _editorService: IEditorService,
@@ -1022,7 +1022,7 @@ export class EditingRenderController extends Disposable implements IRenderModule
     }
 
     // WTF: this is should not exist at all. It is because all editor instances reuse the singleton
-    // "TextSelectionManagerService" and other modules. Which will be refactored soon in August, 2024.
+    // "DocSelectionManagerService" and other modules. Which will be refactored soon in August, 2024.
     private _isCurrentSheetFocused(): boolean {
         return this._instanceSrv.getFocusedUnit()?.getUnitId() === this._context.unitId;
     }

@@ -31,6 +31,7 @@ import {
     AlignRightCommand,
     BulletListCommand,
     CheckListCommand,
+    DocSelectionManagerService,
     DocSkeletonManagerService,
     getCommandSkeleton,
     getParagraphsInRange,
@@ -47,8 +48,7 @@ import {
     SetInlineFormatTextBackgroundColorCommand,
     SetInlineFormatTextColorCommand,
     SetInlineFormatUnderlineCommand,
-    SetTextSelectionsOperation,
-    TextSelectionManagerService } from '@univerjs/docs';
+    SetTextSelectionsOperation } from '@univerjs/docs';
 import type { IMenuButtonItem, IMenuItem, IMenuSelectorItem } from '@univerjs/ui';
 import {
     FONT_FAMILY_LIST,
@@ -114,11 +114,11 @@ function getInsertTableHiddenObservable(
 }
 
 function getTableDisabledObservable(accessor: IAccessor): Observable<boolean> {
-    const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+    const docSelectionManagerService = accessor.get(DocSelectionManagerService);
     const univerInstanceService = accessor.get(IUniverInstanceService);
 
     return new Observable((subscriber) => {
-        const subscription = textSelectionManagerService.textSelection$.subscribe((selection) => {
+        const subscription = docSelectionManagerService.textSelection$.subscribe((selection) => {
             if (selection == null) {
                 subscriber.next(true);
                 return;
@@ -181,10 +181,10 @@ function getTableDisabledObservable(accessor: IAccessor): Observable<boolean> {
 }
 
 function disableMenuWhenNoDocRange(accessor: IAccessor): Observable<boolean> {
-    const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+    const docSelectionManagerService = accessor.get(DocSelectionManagerService);
 
     return new Observable((subscriber) => {
-        const subscription = textSelectionManagerService.textSelection$.subscribe((selection) => {
+        const subscription = docSelectionManagerService.textSelection$.subscribe((selection) => {
             if (selection == null) {
                 subscriber.next(true);
                 return;
@@ -751,7 +751,7 @@ export function AlignJustifyMenuItemFactory(accessor: IAccessor): IMenuButtonIte
 const listValueFactory$ = (accessor: IAccessor) => {
     return new Observable<PresetListType>((subscriber) => {
         const univerInstanceService = accessor.get(IUniverInstanceService);
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         let textSubscription: Subscription | undefined;
         const subscription = univerInstanceService.focused$.subscribe((unitId) => {
             textSubscription?.unsubscribe();
@@ -764,8 +764,8 @@ const listValueFactory$ = (accessor: IAccessor) => {
                 return;
             }
 
-            textSubscription = textSelectionManagerService.textSelection$.subscribe(() => {
-                const range = textSelectionManagerService.getActiveTextRangeWithStyle();
+            textSubscription = docSelectionManagerService.textSelection$.subscribe(() => {
+                const range = docSelectionManagerService.getActiveTextRange();
                 if (range) {
                     const doc = docDataModel.getSelfOrHeaderFooterModel(range?.segmentId);
                     const paragraphs = getParagraphsInRange(range, doc.getBody()?.paragraphs ?? []);
@@ -900,9 +900,9 @@ export function BackgroundColorSelectorMenuItemFactory(accessor: IAccessor): IMe
 
 function getFontStyleAtCursor(accessor: IAccessor) {
     const univerInstanceService = accessor.get(IUniverInstanceService);
-    const textSelectionService = accessor.get(TextSelectionManagerService);
+    const textSelectionService = accessor.get(DocSelectionManagerService);
     const docDataModel = univerInstanceService.getCurrentUniverDocInstance();
-    const activeTextRange = textSelectionService.getActiveTextRangeWithStyle();
+    const activeTextRange = textSelectionService.getActiveTextRange();
 
     if (docDataModel == null || activeTextRange == null) {
         return;
@@ -932,9 +932,9 @@ function getFontStyleAtCursor(accessor: IAccessor) {
 
 function getParagraphStyleAtCursor(accessor: IAccessor) {
     const univerInstanceService = accessor.get(IUniverInstanceService);
-    const textSelectionService = accessor.get(TextSelectionManagerService);
+    const textSelectionService = accessor.get(DocSelectionManagerService);
     const docDataModel = univerInstanceService.getCurrentUniverDocInstance();
-    const activeTextRange = textSelectionService.getActiveTextRangeWithStyle();
+    const activeTextRange = textSelectionService.getActiveTextRange();
 
     if (docDataModel == null || activeTextRange == null) {
         return;

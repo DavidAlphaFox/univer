@@ -16,13 +16,13 @@
 
 import type { DocumentDataModel, ICommandInfo, ICustomRange, IDisposable, IParagraph, IParagraphRange, ITextRange, Nullable } from '@univerjs/core';
 import { Disposable, Inject, IUniverInstanceService, toDisposable, UniverInstanceType } from '@univerjs/core';
+import type { ITextRangeWithStyle } from '@univerjs/engine-render';
 import { getCustomRangesInterestsWithRange } from '../basics/custom-range';
-import type { ITextActiveRange } from './text-selection-manager.service';
-import { DocSelectionManagerService } from './text-selection-manager.service';
+import { DocSelectionManagerService } from './doc-selection-manager.service';
 
 export interface IAutoFormatContext {
     unit: DocumentDataModel;
-    selection: ITextActiveRange;
+    selection: ITextRangeWithStyle;
     /**
      * is selection at doc body
      */
@@ -113,7 +113,7 @@ export class DocAutoFormatService extends Disposable {
     onAutoFormat(id: string, params: Nullable<object>): ICommandInfo[] {
         const autoFormats = this._matches.get(id) ?? [];
         const unit = this._univerInstanceService.getCurrentUnitForType<DocumentDataModel>(UniverInstanceType.UNIVER_DOC);
-        const selection = this._textSelectionManagerService.getActiveTextRangeWithStyle();
+        const selection = this._textSelectionManagerService.getActiveTextRange();
 
         if (unit && selection) {
             const doc = unit.getSelfOrHeaderFooterModel(selection.segmentId);

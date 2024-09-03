@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import type { CustomDecorationType, DocumentDataModel, IAccessor, IMutationInfo, ITextRange } from '@univerjs/core';
+import type { CustomDecorationType, DocumentDataModel, IAccessor, IMutationInfo } from '@univerjs/core';
 import { getBodySlice, IUniverInstanceService, JSONX, TextX, TextXActionType, Tools, UniverInstanceType, UpdateDocsAttributeType } from '@univerjs/core';
+import type { ITextRangeWithStyle } from '@univerjs/engine-render';
 import type { IRichTextEditingMutationParams } from '../commands/mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../commands/mutations/core-editing.mutation';
-import { DocSelectionManagerService, serializeDocRange } from '../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../services/doc-selection-manager.service';
 
 interface IAddCustomDecorationParam {
     unitId: string;
-    ranges: ITextRange[];
+    ranges: ITextRangeWithStyle[];
     segmentId?: string;
     id: string;
     type: CustomDecorationType;
@@ -85,10 +86,10 @@ interface IAddCustomDecorationFactoryParam {
 
 export function addCustomDecorationBySelectionFactory(accessor: IAccessor, param: IAddCustomDecorationFactoryParam) {
     const { segmentId, id, type } = param;
-    const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+    const docSelectionManagerService = accessor.get(DocSelectionManagerService);
     const univerInstanceService = accessor.get(IUniverInstanceService);
 
-    const selections = textSelectionManagerService.getCurrentTextRanges();
+    const selections = docSelectionManagerService.getCurrentTextRanges();
     if (!selections) {
         return false;
     }
@@ -106,7 +107,7 @@ export function addCustomDecorationBySelectionFactory(accessor: IAccessor, param
     const doMutation = addCustomDecorationFactory(
         {
             unitId,
-            ranges: selections.map(serializeDocRange),
+            ranges: selections as ITextRangeWithStyle[],
             id,
             type,
             segmentId,

@@ -34,10 +34,10 @@ import {
     TextXActionType,
     Tools,
 } from '@univerjs/core';
-import type { DocumentViewModel, ITextRangeWithStyle, RectRange, TextRange } from '@univerjs/engine-render';
+import type { DocumentViewModel, ITextRangeWithStyle } from '@univerjs/engine-render';
 
 import { getRetainAndDeleteFromReplace } from '../../basics/retain-delete-params';
-import { DocSelectionManagerService } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../services/doc-selection-manager.service';
 import type { IRichTextEditingMutationParams } from '../mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../mutations/core-editing.mutation';
 import { getCommandSkeleton, getRichTextEditPath } from '../util';
@@ -67,11 +67,11 @@ export function getCustomBlockIdsInSelections(body: IDocumentBody, selections: I
     return customBlockIds;
 }
 
-function hasRangeInTable(ranges: TextRange[]): boolean {
+function hasRangeInTable(ranges: ITextRangeWithStyle[]): boolean {
     return ranges.some((range) => {
-        const { anchorNodePosition } = range;
+        const { startNodePosition } = range;
 
-        return anchorNodePosition ? anchorNodePosition?.path.indexOf('cells') > -1 : false;
+        return startNodePosition ? startNodePosition?.path.indexOf('cells') > -1 : false;
     });
 }
 
@@ -90,9 +90,9 @@ export const InnerPasteCommand: ICommand<IInnerPasteCommandParams> = {
     handler: async (accessor, params: IInnerPasteCommandParams) => {
         const { segmentId, textRanges, doc } = params;
         const commandService = accessor.get(ICommandService);
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
-        const selections = textSelectionManagerService.getCurrentTextRanges();
+        const selections = docSelectionManagerService.getCurrentTextRanges();
         const { body, tableSource, drawings } = doc;
         if (!Array.isArray(selections) || selections.length === 0 || body == null) {
             return false;
@@ -302,7 +302,7 @@ function getCutActionsFromTextRanges(
 
 // eslint-disable-next-line max-lines-per-function
 function getCutActionsFromRectRanges(
-    ranges: RectRange[],
+    ranges: ITextRangeWithStyle[],
     docDataModel: DocumentDataModel,
     viewModel: DocumentViewModel,
     segmentId: string
@@ -424,8 +424,8 @@ function getCutActionsFromRectRanges(
 }
 
 export function getCutActionsFromDocRanges(
-    textRanges: Readonly<Nullable<(ITextRange | TextRange)[]>>,
-    rectRanges: Readonly<Nullable<RectRange[]>>,
+    textRanges: Readonly<Nullable<ITextRangeWithStyle[]>>,
+    rectRanges: Readonly<Nullable<ITextRangeWithStyle[]>>,
     docDataModel: DocumentDataModel,
     viewModel: DocumentViewModel,
     segmentId: string
@@ -465,10 +465,10 @@ export const CutContentCommand: ICommand<IInnerCutCommandParams> = {
     handler: async (accessor, params: IInnerCutCommandParams) => {
         const { segmentId, textRanges } = params;
         const commandService = accessor.get(ICommandService);
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
-        const selections = params.selections ?? textSelectionManagerService.getCurrentTextRanges();
-        const rectRanges = textSelectionManagerService.getCurrentRectRanges();
+        const selections = params.selections ?? docSelectionManagerService.getCurrentTextRanges();
+        const rectRanges = docSelectionManagerService.getCurrentRectRanges();
 
         if (
             (!Array.isArray(selections) || selections.length === 0)

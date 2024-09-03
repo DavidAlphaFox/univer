@@ -15,7 +15,7 @@
  */
 
 import { CommandType, CustomRangeType, DataStreamTreeTokenType, generateRandomId, type ICommand, ICommandService, sequenceExecute } from '@univerjs/core';
-import { replaceSelectionFactory, TextSelectionManagerService } from '@univerjs/docs';
+import { DocSelectionManagerService, replaceSelectionFactory } from '@univerjs/docs';
 import type { IAddDocHyperLinkMutationParams } from '@univerjs/docs-hyper-link';
 import { AddDocHyperLinkMutation } from '@univerjs/docs-hyper-link';
 
@@ -36,8 +36,8 @@ export const UpdateDocHyperLinkCommand: ICommand<IUpdateDocHyperLinkCommandParam
         }
         const { unitId, payload, segmentId } = params;
         const commandService = accessor.get(ICommandService);
-        const selectionService = accessor.get(TextSelectionManagerService);
-        const currentSelection = selectionService.getActiveTextRange();
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const currentSelection = docSelectionManagerService.getActiveTextRange();
         if (!currentSelection) {
             return false;
         }

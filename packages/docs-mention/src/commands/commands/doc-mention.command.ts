@@ -16,7 +16,7 @@
 
 import type { ICommand, IDocumentBody } from '@univerjs/core';
 import { CommandType, CustomRangeType, DataStreamTreeTokenType, ICommandService, sequenceExecute } from '@univerjs/core';
-import { deleteCustomRangeFactory, replaceSelectionFactory, TextSelectionManagerService } from '@univerjs/docs';
+import { deleteCustomRangeFactory, DocSelectionManagerService, replaceSelectionFactory } from '@univerjs/docs';
 import type { IDocMention } from '../../types/interfaces/i-mention';
 import { AddDocMentionMutation } from '../mutations/doc-mention.mutation';
 import { DocMentionModel } from '../../models/doc-mention.model';
@@ -37,8 +37,8 @@ export const AddDocMentionCommand: ICommand<IAddDocMentionCommandParams> = {
 
         const { mention, unitId, startIndex } = params;
         const commandService = accessor.get(ICommandService);
-        const textSelectionManagerService = accessor.get(TextSelectionManagerService);
-        const activeRange = textSelectionManagerService.getActiveTextRangeWithStyle();
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const activeRange = docSelectionManagerService.getActiveTextRange();
         if (!activeRange) {
             return false;
         }

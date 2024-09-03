@@ -28,7 +28,7 @@ import {
 } from '@univerjs/core';
 import enUS from '@univerjs/sheets-formula/locale/en-US';
 import zhCN from '@univerjs/sheets-formula/locale/zh-CN';
-import { DocSkeletonManagerService, DocStateChangeManagerService, IMEInputManagerService, TextSelectionManagerService } from '@univerjs/docs';
+import { DocSelectionManagerService, DocSkeletonManagerService, DocStateChangeManagerService, IMEInputManagerService } from '@univerjs/docs';
 import { IRenderManagerService, ITextSelectionRenderManager, RenderManagerService, TextSelectionRenderManager } from '@univerjs/engine-render';
 import { DocsRenderService } from '@univerjs/docs-ui';
 
@@ -77,7 +77,7 @@ export function createTestBed(documentConfig?: IDocumentData, dependencies?: Dep
         override onStarting(): void {
             const injector = this._injector;
             injector.add([IRenderManagerService, { useClass: RenderManagerService }]);
-            injector.add([TextSelectionManagerService]);
+            injector.add([DocSelectionManagerService]);
             injector.add([DocStateChangeManagerService]);
             injector.add([IMEInputManagerService]);
             injector.add([DocsRenderService]);

@@ -33,10 +33,10 @@ import {
 import type { IDocObjectParam, IRichTextEditingMutationParams } from '@univerjs/docs';
 import {
     VIEWPORT_KEY as DOC_VIEWPORT_KEY,
+    DocSelectionManagerService,
     DocSkeletonManagerService,
     getDocObject,
     RichTextEditingMutation,
-    TextSelectionManagerService,
 } from '@univerjs/docs';
 import type { Viewport } from '@univerjs/engine-render';
 import { DeviceInputEventType, IRenderManagerService } from '@univerjs/engine-render';
@@ -58,7 +58,7 @@ export class ZenEditorController extends RxDisposable {
         @IZenZoneService private readonly _zenZoneService: IZenZoneService,
         @IEditorBridgeService private readonly _editorBridgeService: IEditorBridgeService,
         @IUndoRedoService private readonly _undoRedoService: IUndoRedoService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService
+        @Inject(DocSelectionManagerService) private readonly _textSelectionManagerService: DocSelectionManagerService
     ) {
         super();
 

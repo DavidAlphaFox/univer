@@ -50,10 +50,10 @@ import {
     UniverInstanceType,
 } from '@univerjs/core';
 import {
+    DocSelectionManagerService,
     DocSkeletonManagerService,
     MoveCursorOperation,
     ReplaceContentCommand,
-    TextSelectionManagerService,
 } from '@univerjs/docs';
 import type { IAbsoluteRefTypeForRange, ISequenceNode } from '@univerjs/engine-formula';
 import {
@@ -191,7 +191,7 @@ export class PromptController extends Disposable {
         @IRefSelectionsService private readonly _refSelectionsService: SheetsSelectionsService,
         @IUniverInstanceService private readonly _univerInstanceService: IUniverInstanceService,
         @Inject(IDescriptionService) private readonly _descriptionService: IDescriptionService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService,
+        @Inject(DocSelectionManagerService) private readonly _textSelectionManagerService: DocSelectionManagerService,
         @IContextMenuService private readonly _contextMenuService: IContextMenuService,
         @IEditorService private readonly _editorService: IEditorService
     ) {
@@ -510,7 +510,7 @@ export class PromptController extends Disposable {
     private _initAcceptFormula() {
         this.disposeWithMe(
             this._formulaPromptService.acceptFormulaName$.subscribe((formulaString: string) => {
-                const activeRange = this._textSelectionManagerService.getActiveTextRangeWithStyle();
+                const activeRange = this._textSelectionManagerService.getActiveTextRange();
 
                 if (activeRange == null) {
                     this._hideFunctionPanel();
@@ -576,7 +576,7 @@ export class PromptController extends Disposable {
     }
 
     private _changeFunctionPanelState() {
-        const activeRange = this._textSelectionManagerService.getActiveTextRangeWithStyle();
+        const activeRange = this._textSelectionManagerService.getActiveTextRange();
 
         if (activeRange == null) {
             this._hideFunctionPanel();
@@ -675,7 +675,7 @@ export class PromptController extends Disposable {
      * @returns Return the character under the current cursor in the editor.
      */
     private _getCurrentChar() {
-        const activeRange = this._textSelectionManagerService.getActiveTextRangeWithStyle();
+        const activeRange = this._textSelectionManagerService.getActiveTextRange();
 
         if (activeRange == null) {
             return;
@@ -804,7 +804,7 @@ export class PromptController extends Disposable {
 
             this._formulaPromptService.setSequenceNodes(lastSequenceNodes);
 
-            const activeRange = this._textSelectionManagerService.getActiveTextRangeWithStyle();
+            const activeRange = this._textSelectionManagerService.getActiveTextRange();
 
             if (activeRange == null) {
                 return;
@@ -1206,7 +1206,7 @@ export class PromptController extends Disposable {
         // Get theme color from prompt formula editor when creating a new selection.
         this._allSelectionRenderServices.forEach((r) => this._updateRefSelectionStyle(r, this._isSelectionMovingRefSelections));
 
-        const activeRange = this._textSelectionManagerService.getActiveTextRangeWithStyle();
+        const activeRange = this._textSelectionManagerService.getActiveTextRange();
         if (activeRange == null) {
             return;
         }
@@ -1831,7 +1831,7 @@ export class PromptController extends Disposable {
      * Absolute range, triggered by F4
      */
     private _changeRefString() {
-        const activeRange = this._textSelectionManagerService.getActiveTextRangeWithStyle();
+        const activeRange = this._textSelectionManagerService.getActiveTextRange();
 
         if (activeRange == null) {
             return;

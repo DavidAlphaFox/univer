@@ -63,7 +63,7 @@ export const DocHyperLinkEdit = () => {
     const docSelectionRenderService = renderManagerService.getRenderById(doc!.getUnitId())?.with(DocSelectionRenderService);
 
     useEffect(() => {
-        const activeRange = docSelectionManagerService.getActiveTextRangeWithStyle();
+        const activeRange = docSelectionManagerService.getActiveTextRange();
         if (!activeRange) {
             return;
         }

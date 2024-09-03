@@ -33,7 +33,7 @@ export const DocHeaderFooterOptions = (props: IDocHeaderFooterOptionsProps) => {
     const univerInstanceService = useDependency(IUniverInstanceService);
     const renderManagerService = useDependency(IRenderManagerService);
     const commandService = useDependency(ICommandService);
-    const textSelectionManagerService = useDependency(DocSelectionManagerService);
+    const docSelectionManagerService = useDependency(DocSelectionManagerService);
     const { unitId } = props;
 
     const docSelectionRenderService = renderManagerService.getRenderById(unitId)!.with(DocSelectionRenderService)!;
@@ -145,7 +145,7 @@ export const DocHeaderFooterOptions = (props: IDocHeaderFooterOptionsProps) => {
         }
 
         // TODO: @JOCS, these codes bellow should be automatically executed?
-        textSelectionManagerService.replaceTextRanges([]); // Clear text selection.
+        docSelectionManagerService.replaceTextRanges([]); // Clear text selection.
         transformer.clearSelectedObjects();
         docSelectionRenderService.setSegment('');
         docSelectionRenderService.setSegmentPage(-1);

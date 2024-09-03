@@ -25,7 +25,7 @@ export * from './basics/docs-view-key';
 
 export { type IUniverDocsConfig, UniverDocsPlugin } from './doc-plugin';
 export { DocSkeletonManagerService } from './services/doc-skeleton-manager.service';
-export { DocSelectionManagerService, serializeDocRange } from './services/text-selection-manager.service';
+export { DocSelectionManagerService } from './services/doc-selection-manager.service';
 export { DocStateChangeManagerService, type IDocStateChangeParams } from './services/doc-state-change-manager.service';
 export { DocCustomRangeService, type ICustomRangeHook } from './services/doc-custom-range.service';
 

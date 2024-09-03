@@ -24,6 +24,7 @@ import {
     IUniverInstanceService,
     LifecycleStages,
     OnLifecycle,
+    RANGE_DIRECTION,
 } from '@univerjs/core';
 import type {
     DocumentSkeleton,
@@ -35,14 +36,14 @@ import type {
     INodePosition,
     INodeSearch,
 } from '@univerjs/engine-render';
-import { DocumentSkeletonPageType, IRenderManagerService, NodePositionConvertToCursor, RANGE_DIRECTION } from '@univerjs/engine-render';
+import { DocumentSkeletonPageType, IRenderManagerService, NodePositionConvertToCursor } from '@univerjs/engine-render';
 import type { Subscription } from 'rxjs';
 
 import { getDocObject } from '../basics/component-tools';
 import type { IMoveCursorOperationParams } from '../commands/operations/cursor.operation';
 import { MoveCursorOperation, MoveSelectionOperation } from '../commands/operations/cursor.operation';
 import { DocSkeletonManagerService } from '../services/doc-skeleton-manager.service';
-import { DocSelectionManagerService } from '../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../services/doc-selection-manager.service';
 import { findAboveCell, findBellowCell, findLineBeforeAndAfterTable, findTableAfterLine, findTableBeforeLine, firstLineInCell, firstLineInTable, lastLineInCell, lastLineInTable } from '../basics/table';
 
 @OnLifecycle(LifecycleStages.Rendered, MoveCursorController)
@@ -96,7 +97,7 @@ export class MoveCursorController extends Disposable {
 
     // eslint-disable-next-line max-lines-per-function, complexity
     private _handleShiftMoveSelection(direction: Direction) {
-        const activeRange = this._textSelectionManagerService.getActiveTextRangeWithStyle();
+        const activeRange = this._textSelectionManagerService.getActiveTextRange();
         const allRanges = this._textSelectionManagerService.getCurrentTextRanges()!;
         const docDataModel = this._univerInstanceService.getCurrentUniverDocInstance();
         if (docDataModel == null) {
@@ -209,7 +210,7 @@ export class MoveCursorController extends Disposable {
 
     // eslint-disable-next-line max-lines-per-function, complexity
     private _handleMoveCursor(direction: Direction) {
-        const activeRange = this._textSelectionManagerService.getActiveTextRangeWithStyle();
+        const activeRange = this._textSelectionManagerService.getActiveTextRange();
         const allRanges = this._textSelectionManagerService.getCurrentTextRanges();
         const docDataModel = this._univerInstanceService.getCurrentUniverDocInstance();
         if (docDataModel == null) {

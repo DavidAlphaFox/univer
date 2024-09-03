@@ -29,7 +29,7 @@ import { getRetainAndDeleteFromReplace } from '../../basics/retain-delete-params
 import type { IRichTextEditingMutationParams } from '../mutations/core-editing.mutation';
 import { RichTextEditingMutation } from '../mutations/core-editing.mutation';
 import { isIntersecting, shouldDeleteCustomRange } from '../../basics/custom-range';
-import { DocSelectionManagerService } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../services/doc-selection-manager.service';
 import { getInsertSelection } from '../../basics/selection';
 import { getRichTextEditPath } from '../util';
 import { DeleteDirection } from '../../types/enums/delete-direction';
@@ -55,7 +55,7 @@ export const InsertCommand: ICommand<IInsertCommandParams> = {
         const commandService = accessor.get(ICommandService);
 
         const { range, segmentId, body, unitId, cursorOffset } = params;
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const docDataModel = univerInstanceService.getUnit<DocumentDataModel>(unitId, UniverInstanceType.UNIVER_DOC);
 
@@ -63,7 +63,7 @@ export const InsertCommand: ICommand<IInsertCommandParams> = {
             return false;
         }
 
-        const activeRange = textSelectionManagerService.getActiveTextRangeWithStyle();
+        const activeRange = docSelectionManagerService.getActiveTextRange();
         const originBody = docDataModel.getSelfOrHeaderFooterModel(activeRange?.segmentId ?? '').getBody();
 
         if (!originBody) {

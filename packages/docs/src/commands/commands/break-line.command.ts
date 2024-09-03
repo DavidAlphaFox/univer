@@ -17,7 +17,7 @@
 import type { ICommand, IParagraph } from '@univerjs/core';
 import { BooleanNumber, CommandType, DataStreamTreeTokenType, getBodySlice, ICommandService, IUniverInstanceService, normalizeBody, PresetListType, Tools, updateAttributeByInsert } from '@univerjs/core';
 
-import { DocSelectionManagerService } from '../../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../../services/doc-selection-manager.service';
 import { getInsertSelection } from '../../basics/selection';
 import { DocCustomRangeService } from '../../services/doc-custom-range.service';
 import { InsertCommand } from './core-editing.command';
@@ -66,13 +66,13 @@ export const BreakLineCommand: ICommand = {
     id: 'doc.command.break-line',
     type: CommandType.COMMAND,
     handler: async (accessor) => {
-        const textSelectionManagerService = accessor.get(DocSelectionManagerService);
+        const docSelectionManagerService = accessor.get(DocSelectionManagerService);
         const univerInstanceService = accessor.get(IUniverInstanceService);
         const commandService = accessor.get(ICommandService);
         const customRangeService = accessor.get(DocCustomRangeService);
 
-        const activeTextRange = textSelectionManagerService.getActiveTextRangeWithStyle();
-        const rectRanges = textSelectionManagerService.getCurrentRectRanges();
+        const activeTextRange = docSelectionManagerService.getActiveTextRange();
+        const rectRanges = docSelectionManagerService.getCurrentRectRanges();
         if (activeTextRange == null) {
             return false;
         }
@@ -81,7 +81,7 @@ export const BreakLineCommand: ICommand = {
         if (rectRanges && rectRanges.length) {
             const { startOffset } = activeTextRange;
 
-            textSelectionManagerService.replaceTextRanges([{
+            docSelectionManagerService.replaceTextRanges([{
                 startOffset,
                 endOffset: startOffset,
             }]);

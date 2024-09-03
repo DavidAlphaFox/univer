@@ -30,13 +30,12 @@ export { DocUIController } from './controllers/doc-ui.controller';
 
 export { RectRange, convertPositionsToRectRanges } from './services/selection/rect-range';
 export { getCanvasOffsetByEngine } from './services/selection/selection-utils';
-export type { IActiveTextRange, IEditorInputConfig, ITextSelectionInnerParam } from './services/selection/doc-selection-render.service';
+export type { IEditorInputConfig } from './services/selection/doc-selection-render.service';
 export { getAnchorBounding, TEXT_RANGE_LAYER_INDEX, TextRange, getLineBounding } from './services/selection/text-range';
 export { NodePositionConvertToCursor } from './services/selection/convert-text-range';
 export { getOneTextSelectionRange } from './services/selection/convert-text-range';
 export type { IDocRange } from './services/selection/range-interface';
 export { isInSameTableCell, isValidRectRange, NodePositionConvertToRectRange } from './services/selection/convert-rect-range';
-export { DOC_RANGE_TYPE } from './services/selection/range-interface';
 
 export { DocSelectionRenderService } from './services/selection/doc-selection-render.service';
 

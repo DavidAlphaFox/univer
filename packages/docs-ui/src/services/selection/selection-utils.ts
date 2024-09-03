@@ -30,12 +30,13 @@
  * limitations under the License.
  */
 
-import { type Nullable, Tools } from '@univerjs/core';
-import type { Documents, DocumentSkeleton, Engine, IDocumentSkeletonGlyph, INodePosition, ITextSelectionStyle, Scene } from '@univerjs/engine-render';
-import { getOffsetRectForDom, RANGE_DIRECTION } from '@univerjs/engine-render';
+import { type Nullable, RANGE_DIRECTION, Tools } from '@univerjs/core';
+import type { Documents, DocumentSkeleton, Engine, IDocumentSkeletonGlyph, INodePosition, ITextRangeWithStyle, ITextSelectionStyle, Scene } from '@univerjs/engine-render';
+import { getOffsetRectForDom } from '@univerjs/engine-render';
 import { convertPositionsToRectRanges, RectRange } from './rect-range';
 import { TextRange } from './text-range';
 import { isInSameTableCell, isValidRectRange } from './convert-rect-range';
+import type { IDocRange } from './range-interface';
 
 interface IDocRangeList {
     textRanges: TextRange[];
@@ -307,4 +308,20 @@ export function getParagraphInfoByGlyph(node: IDocumentSkeletonGlyph) {
         content,
         nodeIndex,
     };
+}
+
+export function serializeDocRange(textRange: IDocRange): ITextRangeWithStyle {
+    const { startOffset, endOffset, collapsed, rangeType, startNodePosition, endNodePosition, direction } = textRange;
+    const serializedTextRange: ITextRangeWithStyle = {
+        startOffset: startOffset!,
+        endOffset: endOffset!,
+        collapsed,
+        rangeType,
+        startNodePosition,
+        endNodePosition,
+        direction,
+        isActive: textRange.isActive(),
+    };
+
+    return serializedTextRange;
 }

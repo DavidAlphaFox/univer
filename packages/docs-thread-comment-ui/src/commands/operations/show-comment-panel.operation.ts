@@ -92,7 +92,7 @@ export const StartAddCommentOperation: ICommand = {
         const docCommentService = accessor.get(DocThreadCommentService);
         const commandService = accessor.get(ICommandService);
         const sidebarService = accessor.get(ISidebarService);
-        const textRange = docSelectionManagerService.getActiveTextRangeWithStyle();
+        const textRange = docSelectionManagerService.getActiveTextRange();
         if (!doc || !textRange) {
             return false;
         }

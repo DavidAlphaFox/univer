@@ -38,9 +38,9 @@ import type { IRichTextEditingMutationParams } from '@univerjs/docs';
 import {
     CoverContentCommand,
     VIEWPORT_KEY as DOC_VIEWPORT_KEY,
+    DocSelectionManagerService,
     DocSkeletonManagerService,
     RichTextEditingMutation,
-    TextSelectionManagerService,
 } from '@univerjs/docs';
 import type { DocumentViewModel, RenderComponentType } from '@univerjs/engine-render';
 import { DeviceInputEventType, IRenderManagerService, ScrollBar } from '@univerjs/engine-render';
@@ -66,7 +66,7 @@ export class FormulaEditorController extends RxDisposable {
         @IContextService private readonly _contextService: IContextService,
         @IFormulaEditorManagerService private readonly _formulaEditorManagerService: IFormulaEditorManagerService,
         @IUndoRedoService private readonly _undoRedoService: IUndoRedoService,
-        @Inject(TextSelectionManagerService) private readonly _textSelectionManagerService: TextSelectionManagerService
+        @Inject(DocSelectionManagerService) private readonly _textSelectionManagerService: DocSelectionManagerService
     ) {
         super();
 

@@ -19,7 +19,7 @@ import { Disposable, ICommandService, Inject, IUniverInstanceService, LifecycleS
 import type { ITextRangeWithStyle } from '@univerjs/engine-render';
 import type { ISetTextSelectionsOperationParams } from '../commands/operations/text-selection.operation';
 import { SetTextSelectionsOperation } from '../commands/operations/text-selection.operation';
-import { DocSelectionManagerService } from '../services/text-selection-manager.service';
+import { DocSelectionManagerService } from '../services/doc-selection-manager.service';
 import { isSegmentIntersects } from '../basics/selection';
 
 @OnLifecycle(LifecycleStages.Ready, DocCustomRangeController)
